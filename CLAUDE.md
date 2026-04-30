@@ -2,6 +2,8 @@
 
 Personal portfolio site built with Astro (static output).
 
+**Figma:** https://www.figma.com/design/kHZWmh0APIvFGjVQfjWII9/Portfolio?node-id=595-238
+
 ## Commands
 
 ```bash
