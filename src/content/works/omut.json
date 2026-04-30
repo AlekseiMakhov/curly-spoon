@@ -4,7 +4,7 @@
   "title": "OMUT",
   "next": "balmain",
   "description": "Dark, immersive visuals for a jewelry brand. Exploring depth, shadow, and material presence through high-contrast studio photography and post-processing.",
-  "cover": "/media/omut/cover.jpg",
+  "cover": "/media/omut/01.jpg",
   "gallery": [
     { "type": "image", "src": "/media/omut/01.jpg", "cols": 1 },
     { "type": "image", "src": "/media/omut/02.jpg", "cols": 2, "pair": "/media/omut/03.jpg" },
