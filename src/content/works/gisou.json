@@ -1,0 +1,17 @@
+{
+  "slug": "gisou",
+  "index": "01",
+  "title": "GISOU",
+  "next": "omut",
+  "description": "A visual exploration of liquid richness, gloss, and high-end materiality. Built through a hybrid 3D + AI workflow. Pushing beyond traditional rendering to achieve heightened realism and controlled abstraction.",
+  "cover": "/media/gisou/cover.jpg",
+  "gallery": [
+    { "type": "image", "src": "/media/gisou/01.jpg", "cols": 1 },
+    { "type": "image", "src": "/media/gisou/02.jpg", "cols": 2, "pair": "/media/gisou/03.jpg" },
+    { "type": "video", "src": "/media/gisou/04.mp4", "cols": 3, "pair2": "/media/gisou/05.mp4" },
+    { "type": "image", "src": "/media/gisou/06.jpg", "cols": 1 },
+    { "type": "image", "src": "/media/gisou/07.jpg", "cols": 2, "pair": "/media/gisou/08.jpg" },
+    { "type": "image", "src": "/media/gisou/09.jpg", "cols": 1 },
+    { "type": "image", "src": "/media/gisou/10.jpg", "cols": 2, "pair": "/media/gisou/11.jpg" }
+  ]
+}

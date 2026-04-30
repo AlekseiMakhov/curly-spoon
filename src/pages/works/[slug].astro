@@ -1,0 +1,139 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProjectGallery from '../../components/ProjectGallery.astro';
+import gisou from '../../content/works/gisou.json';
+import omut from '../../content/works/omut.json';
+import balmain from '../../content/works/balmain.json';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'gisou' } },
+    { params: { slug: 'omut' } },
+    { params: { slug: 'balmain' } },
+  ];
+}
+
+const worksMap: Record<string, typeof gisou> = { gisou, omut, balmain };
+const { slug } = Astro.params;
+const work = worksMap[slug];
+const nextWork = worksMap[work.next];
+---
+
+<Layout title={`${work.title} — Arina Makhova`}>
+  <article class="project">
+    <header class="project__header">
+      <span class="project__index">{work.index}</span>
+      <h1 class="project__title">{work.title}</h1>
+      <p class="project__desc">{work.description}</p>
+    </header>
+
+    <div class="project__gallery">
+      <ProjectGallery items={work.gallery} />
+    </div>
+
+    <footer class="project__next">
+      <a href={`/works/${nextWork.slug}`} class="project__next-link">
+        <span class="project__next-label">Next</span>
+        <span class="project__next-title">{nextWork.title}</span>
+      </a>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .project {
+    padding-top: var(--nav-height);
+  }
+
+  .project__header {
+    padding: 80px var(--page-padding) 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .project__index {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    font-size: 24px;
+    opacity: 0.5;
+  }
+
+  .project__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(60px, 7.5vw, 130px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .project__desc {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: clamp(14px, 1.4vw, 24px);
+    line-height: 1.5;
+    max-width: 680px;
+    opacity: 0.8;
+  }
+
+  .project__gallery {
+    padding: 0 var(--page-padding);
+  }
+
+  /* Next project footer */
+  .project__next {
+    padding: 120px var(--page-padding) 80px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: 80px;
+  }
+
+  .project__next-link {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .project__next-label {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    font-size: 24px;
+    opacity: 0.5;
+  }
+
+  .project__next-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(60px, 4.6vw, 80px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    transition: opacity 0.2s;
+  }
+
+  .project__next-link:hover .project__next-title {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .project__header {
+      padding: 40px 20px 40px;
+      gap: 12px;
+    }
+
+    .project__index {
+      font-size: 14px;
+    }
+
+    .project__gallery {
+      padding: 0 20px;
+    }
+
+    .project__next {
+      padding: 60px 20px 60px;
+      margin-top: 40px;
+    }
+
+    .project__next-label {
+      font-size: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,13 @@
+{
+  "slug": "balmain",
+  "index": "03",
+  "title": "BALMAIN",
+  "next": "gisou",
+  "description": "Fashion-forward visual direction for Balmain. Bold compositions, luxurious materials, and an unapologetic sense of scale.",
+  "cover": "/media/balmain/cover.jpg",
+  "gallery": [
+    { "type": "image", "src": "/media/balmain/01.jpg", "cols": 1 },
+    { "type": "image", "src": "/media/balmain/02.jpg", "cols": 2, "pair": "/media/balmain/03.jpg" },
+    { "type": "image", "src": "/media/balmain/04.jpg", "cols": 1 }
+  ]
+}

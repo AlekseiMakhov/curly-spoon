@@ -1,0 +1,126 @@
+---
+import Layout from '../layouts/Layout.astro';
+import gisou from '../content/works/gisou.json';
+import omut from '../content/works/omut.json';
+import balmain from '../content/works/balmain.json';
+
+const works = [omut, balmain, gisou];
+---
+
+<Layout title="Arina Makhova — Works">
+  <section class="works">
+    {works.map((work) => (
+      <a href={`/works/${work.slug}`} class="work-item">
+        <span class="work-item__index">{work.index}</span>
+        <h2 class="work-item__title">{work.title}</h2>
+        <div class="work-item__image">
+          <img src={work.cover} alt={work.title} loading="lazy" />
+        </div>
+      </a>
+    ))}
+  </section>
+</Layout>
+
+<style>
+  .works {
+    padding-top: var(--nav-height);
+  }
+
+  .work-item {
+    display: block;
+    position: relative;
+    padding: 28px var(--page-padding);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .work-item__index {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    font-size: 30px;
+    line-height: 1;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .work-item__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(80px, 13.3vw, 230px);
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+    transition: opacity 0.3s;
+  }
+
+  /* Hover image */
+  .work-item__image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .work-item__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.85) brightness(0.6);
+  }
+
+  .work-item:hover .work-item__image {
+    opacity: 1;
+  }
+
+  .work-item:hover .work-item__title {
+    mix-blend-mode: overlay;
+  }
+
+  @media (max-width: 768px) {
+    .work-item {
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      grid-template-rows: auto auto;
+      align-items: center;
+      gap: 0 12px;
+    }
+
+    .work-item__index {
+      font-size: 20px;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .work-item__title {
+      font-size: clamp(48px, 14vw, 60px);
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    /* On mobile, show cover as side thumbnail instead of hover overlay */
+    .work-item__image {
+      position: relative;
+      inset: unset;
+      opacity: 1;
+      width: 100px;
+      height: 100px;
+      grid-column: 2;
+      grid-row: 1 / 3;
+      pointer-events: all;
+    }
+
+    .work-item__image img {
+      filter: none;
+    }
+
+    .work-item:hover .work-item__title {
+      mix-blend-mode: normal;
+    }
+  }
+</style>
