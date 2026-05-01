@@ -22,3 +22,16 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# playwright screenshots and snapshots
+.playwright-mcp/
+/*.png
+/*.jpg
+/*.jpeg
+
+# archives
+/*.zip
+
+# claude / mcp local config
+.claude/
+.mcp.json

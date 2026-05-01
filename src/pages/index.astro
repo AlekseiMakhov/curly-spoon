@@ -4,20 +4,40 @@ import gisou from '../content/works/gisou.json';
 import omut from '../content/works/omut.json';
 import balmain from '../content/works/balmain.json';
 
-const works = [omut, balmain, gisou];
+type Work = typeof omut & { hoverImages: string[] };
+const works = [omut, balmain, gisou] as Work[];
 ---
 
 <Layout title="Arina Makhova — Works">
   <section class="works">
-    {works.map((work) => (
-      <a href={`/works/${work.slug}`} class="work-item">
-        <span class="work-item__index">{work.index}</span>
-        <h2 class="work-item__title">{work.title}</h2>
-        <div class="work-item__image">
-          <img src={work.cover} alt={work.title} loading="lazy" />
-        </div>
-      </a>
-    ))}
+    {works.map((work) => {
+      const tagline = work.description.split('. ')[0] + '.';
+      return (
+        <a href={`/works/${work.slug}`} class="work-item">
+          <span class="work-item__index">{work.index}</span>
+          <h2 class="work-item__title">{work.title}</h2>
+          <img class="work-item__thumb" src={work.cover} alt="" loading="lazy" />
+          <div class="work-item__marquee" aria-hidden="true">
+            <div class="work-item__marquee-inner">
+              <div class="work-item__marquee-track">
+                <span class="work-item__marquee-heading">{work.title}</span>
+                {work.hoverImages.map((src) => (
+                  <img class="work-item__marquee-img" src={src} alt="" loading="eager" />
+                ))}
+                <p class="work-item__marquee-desc">{tagline}</p>
+              </div>
+              <div class="work-item__marquee-track" aria-hidden="true">
+                <span class="work-item__marquee-heading">{work.title}</span>
+                {work.hoverImages.map((src) => (
+                  <img class="work-item__marquee-img" src={src} alt="" loading="eager" />
+                ))}
+                <p class="work-item__marquee-desc">{tagline}</p>
+              </div>
+            </div>
+          </div>
+        </a>
+      );
+    })}
   </section>
 </Layout>
 
@@ -30,9 +50,13 @@ const works = [omut, balmain, gisou];
     display: block;
     position: relative;
     padding: 28px var(--page-padding);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
     cursor: pointer;
+    transition: background-color 0.25s;
+  }
+
+  .work-item:hover {
+    background-color: var(--color-text);
   }
 
   .work-item__index {
@@ -40,47 +64,91 @@ const works = [omut, balmain, gisou];
     font-weight: 300;
     font-size: 30px;
     line-height: 1;
-    opacity: 0.5;
     display: block;
     margin-bottom: 4px;
+    transition: opacity 0.15s;
   }
 
   .work-item__title {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(80px, 13.3vw, 230px);
-    line-height: 0.88;
-    letter-spacing: -0.02em;
-    position: relative;
-    z-index: 1;
-    transition: opacity 0.3s;
+    line-height: 1;
+    transition: opacity 0.15s;
   }
 
-  /* Hover image */
-  .work-item__image {
+  .work-item:hover .work-item__index,
+  .work-item:hover .work-item__title {
+    opacity: 0;
+  }
+
+  .work-item__thumb {
+    display: none;
+  }
+
+  /* Marquee overlay */
+  .work-item__marquee {
     position: absolute;
     inset: 0;
-    z-index: 0;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+    padding-block: 18px;
+    overflow: hidden;
+    display: none;
     pointer-events: none;
   }
 
-  .work-item__image img {
-    width: 100%;
+  .work-item:hover .work-item__marquee {
+    display: block;
+  }
+
+  /* Two identical tracks side by side */
+  .work-item__marquee-inner {
+    display: flex;
     height: 100%;
+  }
+
+  .work-item__marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    height: 100%;
+    gap: var(--gap-gallery);
+    padding-inline: calc(var(--gap-gallery) / 2);
+    animation: marquee-loop 18s linear infinite;
+  }
+
+  @keyframes marquee-loop {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-100%, 0, 0); }
+  }
+
+  .work-item__marquee-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(80px, 13.3vw, 230px);
+    line-height: 1;
+    color: var(--color-bg);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .work-item__marquee-img {
+    width: auto;
+    height: 100%;
+    aspect-ratio: 4/5;
     object-fit: cover;
-    filter: saturate(0.85) brightness(0.6);
+    flex-shrink: 0;
   }
 
-  .work-item:hover .work-item__image {
-    opacity: 1;
+  .work-item__marquee-desc {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.5;
+    max-width: 280px;
+    color: var(--color-bg);
+    flex-shrink: 0;
   }
 
-  .work-item:hover .work-item__title {
-    mix-blend-mode: overlay;
-  }
-
+  /* Mobile */
   @media (max-width: 768px) {
     .work-item {
       padding: 16px 20px;
@@ -89,6 +157,15 @@ const works = [omut, balmain, gisou];
       grid-template-rows: auto auto;
       align-items: center;
       gap: 0 12px;
+    }
+
+    .work-item:hover {
+      background-color: transparent;
+    }
+
+    .work-item:hover .work-item__index,
+    .work-item:hover .work-item__title {
+      opacity: 1;
     }
 
     .work-item__index {
@@ -103,24 +180,17 @@ const works = [omut, balmain, gisou];
       grid-row: 2;
     }
 
-    /* On mobile, show cover as side thumbnail instead of hover overlay */
-    .work-item__image {
-      position: relative;
-      inset: unset;
-      opacity: 1;
+    .work-item__thumb {
+      display: block;
       width: 100px;
       height: 100px;
+      object-fit: cover;
       grid-column: 2;
       grid-row: 1 / 3;
-      pointer-events: all;
     }
 
-    .work-item__image img {
-      filter: none;
-    }
-
-    .work-item:hover .work-item__title {
-      mix-blend-mode: normal;
+    .work-item__marquee {
+      display: none !important;
     }
   }
 </style>
