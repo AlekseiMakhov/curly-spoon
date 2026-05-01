@@ -1,14 +1,17 @@
 ---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentPath = Astro.url.pathname;
+const isHome = currentPath === `${base}/` || currentPath === base;
+const isAbout = currentPath.startsWith(`${base}/about`);
 ---
 
 <header class="nav">
   <div class="nav__inner">
-    <a href="/" class="nav__logo">ARINA MAKHOVA</a>
+    <a href={`${base}/`} class="nav__logo">ARINA MAKHOVA</a>
 
     <nav class="nav__links" aria-label="Main navigation">
-      <a href="/" class:list={['nav__link', { active: currentPath === '/' }]}>WORKS</a>
-      <a href="/about" class:list={['nav__link', { active: currentPath === '/about' }]}>ABOUT</a>
+      <a href={`${base}/`} class:list={['nav__link', { active: isHome }]}>WORKS</a>
+      <a href={`${base}/about`} class:list={['nav__link', { active: isAbout }]}>ABOUT</a>
     </nav>
 
     <button class="nav__burger" aria-label="Open menu" aria-expanded="false">
@@ -23,8 +26,8 @@ const currentPath = Astro.url.pathname;
   <div class="nav__mobile-menu" aria-hidden="true">
     <button class="nav__mobile-close" aria-label="Close menu">✕</button>
     <nav>
-      <a href="/" class="nav__mobile-link">WORKS</a>
-      <a href="/about" class="nav__mobile-link">ABOUT</a>
+      <a href={`${base}/`} class="nav__mobile-link">WORKS</a>
+      <a href={`${base}/about`} class="nav__mobile-link">ABOUT</a>
     </nav>
   </div>
 </header>

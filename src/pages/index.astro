@@ -15,7 +15,7 @@ const withBase = (path: string) => `${base}${path}`;
     {works.map((work) => {
       const tagline = work.description.split('. ')[0] + '.';
       return (
-        <a href={`/works/${work.slug}`} class="work-item">
+        <a href={withBase(`/works/${work.slug}`)} class="work-item">
           <span class="work-item__index">{work.index}</span>
           <h2 class="work-item__title">{work.title}</h2>
           <img class="work-item__thumb" src={withBase(work.cover)} alt="" loading="lazy" />

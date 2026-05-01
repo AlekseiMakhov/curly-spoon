@@ -17,6 +17,7 @@ const worksMap: Record<string, typeof gisou> = { gisou, omut, balmain };
 const { slug } = Astro.params;
 const work = worksMap[slug];
 const nextWork = worksMap[work.next];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Layout title={`${work.title} — Arina Makhova`}>
@@ -32,7 +33,7 @@ const nextWork = worksMap[work.next];
     </div>
 
     <footer class="project__next">
-      <a href={`/works/${nextWork.slug}`} class="project__next-link">
+      <a href={`${base}/works/${nextWork.slug}`} class="project__next-link">
         <span class="project__next-label">Next</span>
         <span class="project__next-title">{nextWork.title}</span>
       </a>
