@@ -1,0 +1,183 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<header class="nav">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">ARINA MAKHOVA</a>
+
+    <nav class="nav__links" aria-label="Main navigation">
+      <a href="/" class:list={['nav__link', { active: currentPath === '/' }]}>WORKS</a>
+      <a href="/about" class:list={['nav__link', { active: currentPath === '/about' }]}>ABOUT</a>
+    </nav>
+
+    <button class="nav__burger" aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <div class="nav__divider"></div>
+
+  <div class="nav__mobile-menu" aria-hidden="true">
+    <button class="nav__mobile-close" aria-label="Close menu">✕</button>
+    <nav>
+      <a href="/" class="nav__mobile-link">WORKS</a>
+      <a href="/about" class="nav__mobile-link">ABOUT</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const burger = document.querySelector('.nav__burger') as HTMLButtonElement;
+  const mobileMenu = document.querySelector('.nav__mobile-menu') as HTMLElement;
+  const closeBtn = document.querySelector('.nav__mobile-close') as HTMLButtonElement;
+
+  function openMenu() {
+    mobileMenu.classList.add('is-open');
+    mobileMenu.setAttribute('aria-hidden', 'false');
+    burger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    mobileMenu.classList.remove('is-open');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  burger?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--color-bg);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px var(--page-padding);
+    height: var(--nav-height);
+  }
+
+  .nav__logo {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 60px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .nav__link {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+
+  .nav__link:hover,
+  .nav__link.active {
+    opacity: 1;
+  }
+
+  .nav__divider {
+    height: 1px;
+    background-color: var(--color-text);
+    margin: 0 var(--page-padding);
+  }
+
+  .nav__burger {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .nav__burger span {
+    display: block;
+    width: 28px;
+    height: 2px;
+    background-color: var(--color-text);
+  }
+
+  /* Mobile menu overlay */
+  .nav__mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: var(--color-bg);
+    z-index: 200;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .nav__mobile-menu.is-open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .nav__mobile-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 24px;
+    cursor: pointer;
+    font-family: var(--font-display);
+  }
+
+  .nav__mobile-link {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 58px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 768px) {
+    .nav__links {
+      display: none;
+    }
+
+    .nav__burger {
+      display: flex;
+    }
+
+    .nav__logo {
+      font-size: 18px;
+    }
+
+    .nav__mobile-menu {
+      display: flex;
+    }
+  }
+</style>
