@@ -12,6 +12,8 @@ interface Props {
 }
 
 const { items } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (path: string) => `${base}${path}`;
 ---
 
 <div class="gallery">
@@ -20,9 +22,9 @@ const { items } = Astro.props;
       return (
         <div class="gallery__row gallery__row--full">
           {item.type === 'video' ? (
-            <video src={item.src} autoplay loop muted playsinline />
+            <video src={withBase(item.src)} autoplay loop muted playsinline />
           ) : (
-            <img src={item.src} alt="" loading="lazy" />
+            <img src={withBase(item.src)} alt="" loading="lazy" />
           )}
         </div>
       );
@@ -33,13 +35,13 @@ const { items } = Astro.props;
         <div class="gallery__row gallery__row--2col">
           <div class="gallery__cell">
             {item.type === 'video' ? (
-              <video src={item.src} autoplay loop muted playsinline />
+              <video src={withBase(item.src)} autoplay loop muted playsinline />
             ) : (
-              <img src={item.src} alt="" loading="lazy" />
+              <img src={withBase(item.src)} alt="" loading="lazy" />
             )}
           </div>
           <div class="gallery__cell">
-            <img src={item.pair} alt="" loading="lazy" />
+            <img src={withBase(item.pair)} alt="" loading="lazy" />
           </div>
         </div>
       );
@@ -49,13 +51,13 @@ const { items } = Astro.props;
       return (
         <div class="gallery__row gallery__row--3col">
           <div class="gallery__cell">
-            <img src={item.src} alt="" loading="lazy" />
+            <img src={withBase(item.src)} alt="" loading="lazy" />
           </div>
           <div class="gallery__cell gallery__cell--video">
-            <video src={item.pair} autoplay loop muted playsinline />
+            <video src={withBase(item.pair)} autoplay loop muted playsinline />
           </div>
           <div class="gallery__cell gallery__cell--video">
-            <video src={item.pair2} autoplay loop muted playsinline />
+            <video src={withBase(item.pair2)} autoplay loop muted playsinline />
           </div>
         </div>
       );

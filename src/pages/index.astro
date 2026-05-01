@@ -6,6 +6,8 @@ import balmain from '../content/works/balmain.json';
 
 type Work = typeof omut & { hoverImages: string[] };
 const works = [omut, balmain, gisou] as Work[];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (path: string) => `${base}${path}`;
 ---
 
 <Layout title="Arina Makhova — Works">
@@ -16,20 +18,20 @@ const works = [omut, balmain, gisou] as Work[];
         <a href={`/works/${work.slug}`} class="work-item">
           <span class="work-item__index">{work.index}</span>
           <h2 class="work-item__title">{work.title}</h2>
-          <img class="work-item__thumb" src={work.cover} alt="" loading="lazy" />
+          <img class="work-item__thumb" src={withBase(work.cover)} alt="" loading="lazy" />
           <div class="work-item__marquee" aria-hidden="true">
             <div class="work-item__marquee-inner">
               <div class="work-item__marquee-track">
                 <span class="work-item__marquee-heading">{work.title}</span>
                 {work.hoverImages.map((src) => (
-                  <img class="work-item__marquee-img" src={src} alt="" loading="eager" />
+                  <img class="work-item__marquee-img" src={withBase(src)} alt="" loading="eager" />
                 ))}
                 <p class="work-item__marquee-desc">{tagline}</p>
               </div>
               <div class="work-item__marquee-track" aria-hidden="true">
                 <span class="work-item__marquee-heading">{work.title}</span>
                 {work.hoverImages.map((src) => (
-                  <img class="work-item__marquee-img" src={src} alt="" loading="eager" />
+                  <img class="work-item__marquee-img" src={withBase(src)} alt="" loading="eager" />
                 ))}
                 <p class="work-item__marquee-desc">{tagline}</p>
               </div>
