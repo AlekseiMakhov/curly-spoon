@@ -2,6 +2,10 @@
 
 Personal portfolio site built with Astro (static output).
 
+## Язык общения
+
+Отвечать пользователю и выводить план (plan mode) на русском языке.
+
 **Figma:** https://www.figma.com/design/kHZWmh0APIvFGjVQfjWII9/Portfolio?node-id=595-238
 
 ## Commands
