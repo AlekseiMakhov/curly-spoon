@@ -16,9 +16,11 @@ const withBase = (path: string) => `${base}${path}`;
       const tagline = work.description.split('. ')[0] + '.';
       return (
         <a href={withBase(`/works/${work.slug}`)} class="work-item">
-          <span class="work-item__index">{work.index}</span>
-          <h2 class="work-item__title">{work.title}</h2>
-          <img class="work-item__thumb" src={withBase(work.cover)} alt="" loading="lazy" />
+          <div class="work-item__content">
+            <span class="work-item__index">{work.index}</span>
+            <h2 class="work-item__title">{work.title}</h2>
+            <img class="work-item__thumb" src={withBase(work.cover)} alt="" loading="lazy" />
+          </div>
           <div class="work-item__marquee" aria-hidden="true">
             <div class="work-item__marquee-inner">
               <div class="work-item__marquee-track">
@@ -51,7 +53,7 @@ const withBase = (path: string) => `${base}${path}`;
   .work-item {
     display: block;
     position: relative;
-    padding: 28px var(--page-padding);
+    padding: 28px 0;
     overflow: hidden;
     cursor: pointer;
     transition: background-color 0.25s;
@@ -59,6 +61,13 @@ const withBase = (path: string) => `${base}${path}`;
 
   .work-item:hover {
     background-color: var(--color-text);
+  }
+
+  /* Static index + title aligned to the grid; the marquee stays full-bleed. */
+  .work-item__content {
+    max-width: var(--grid-max);
+    margin-inline: auto;
+    padding-inline: var(--page-padding);
   }
 
   .work-item__index {
@@ -151,9 +160,12 @@ const withBase = (path: string) => `${base}${path}`;
   }
 
   /* Mobile */
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     .work-item {
-      padding: 16px 20px;
+      padding: 16px 0;
+    }
+
+    .work-item__content {
       display: grid;
       grid-template-columns: 1fr 100px;
       grid-template-rows: auto auto;

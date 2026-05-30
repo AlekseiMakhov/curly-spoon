@@ -87,18 +87,21 @@ const withBase = (path: string) => `${base}${path}`;
     object-fit: cover;
   }
 
-  /* 2-column row */
-  .gallery__row--2col {
+  /* Rows sit on the layout grid (12 cols desktop / 6 cols ≤900px) */
+  .gallery__row--2col,
+  .gallery__row--3col {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--gap-gallery);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--gap-gallery);
   }
 
   .gallery__cell {
     overflow: hidden;
   }
 
+  /* 2-column row — two equal halves (6 of 12 cols, or 3 of 6) */
   .gallery__row--2col .gallery__cell {
+    grid-column: span 6;
     aspect-ratio: 3 / 4;
   }
 
@@ -109,15 +112,13 @@ const withBase = (path: string) => `${base}${path}`;
     object-fit: cover;
   }
 
-  /* 3-column row — left is image, right two are 9:16 videos */
+  /* 3-column row — left is image, right two are 9:16 videos (4 of 12 cols, or 2 of 6) */
   .gallery__row--3col {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: var(--gap-gallery);
     align-items: end;
   }
 
   .gallery__row--3col .gallery__cell {
+    grid-column: span 4;
     aspect-ratio: 3 / 4;
   }
 
@@ -132,19 +133,14 @@ const withBase = (path: string) => `${base}${path}`;
     object-fit: cover;
   }
 
-  @media (max-width: 768px) {
-    .gallery {
-      gap: 20px;
+  @media (max-width: 900px) {
+    /* 6-column grid: halves span 3, thirds span 2 */
+    .gallery__row--2col .gallery__cell {
+      grid-column: span 3;
     }
 
-    .gallery__row--2col {
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .gallery__row--3col {
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
+    .gallery__row--3col .gallery__cell {
+      grid-column: span 2;
     }
 
     .gallery__row--full {
