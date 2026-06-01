@@ -1,5 +1,5 @@
 ---
-import { EMAIL, SOCIALS } from '../consts';
+import ContactInfo from './ContactInfo.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentPath = Astro.url.pathname;
 const isHome = currentPath === `${base}/` || currentPath === base;
@@ -34,13 +34,7 @@ const isAbout = currentPath.startsWith(`${base}/about`);
     </nav>
 
     <div class="nav__mobile-contact">
-      <span class="nav__mobile-contact-label">Contact me :</span>
-      <a href={`mailto:${EMAIL}`} class="nav__mobile-contact-email">{EMAIL}</a>
-      <div class="nav__mobile-socials">
-        {SOCIALS.map((s) => (
-          <a href={s.href} class="nav__mobile-social" aria-label={s.name}>{s.label}</a>
-        ))}
-      </div>
+      <ContactInfo label="Contact me :" />
     </div>
   </div>
 </header>
@@ -229,20 +223,9 @@ const isAbout = currentPath.startsWith(`${base}/about`);
     line-height: 1.5;
   }
 
-  /* Bottom contact block */
+  /* Bottom contact block — sets the font size; ContactInfo handles the rest */
   .nav__mobile-contact {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    font-family: var(--font-mono);
-    font-weight: 400;
     font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .nav__mobile-socials {
-    display: flex;
-    gap: 20px;
   }
 
   @media (max-width: 900px) {

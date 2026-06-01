@@ -1,5 +1,5 @@
 ---
-import { EMAIL, SOCIALS } from '../consts';
+import ContactInfo from './ContactInfo.astro';
 
 interface Props {
   nextSlug: string;
@@ -17,16 +17,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   </a>
 
   <div class="footer__info">
-    <div class="footer__contact">
-      <span class="footer__contact-label">Contact me</span>
-      <a href={`mailto:${EMAIL}`} class="footer__email">{EMAIL}</a>
-    </div>
-
-    <div class="footer__socials">
-      {SOCIALS.map((s) => (
-        <a href={s.href} class="footer__social" aria-label={s.name}>{s.label}</a>
-      ))}
-    </div>
+    <ContactInfo label="Contact me" />
   </div>
 </footer>
 
@@ -79,43 +70,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     font-size: 0.8em;
   }
 
-  /* contact (left, col 7) + socials (right), bottom-aligned on one line */
+  /* contact (col 7) + socials (right), bottom-aligned — layout passed to ContactInfo via vars */
   .footer__info {
     grid-column: 7 / -1;
     margin-top: 37px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--grid-gutter);
-  }
-
-  .footer__contact {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    font-family: var(--font-mono);
-    font-weight: 400;
     font-size: 20px;
-    line-height: 1.5;
-  }
-
-  .footer__socials {
-    display: flex;
-    gap: 30px;
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 1.5;
-  }
-
-  .footer__email,
-  .footer__social {
-    transition: opacity 0.2s;
-  }
-
-  .footer__email:hover,
-  .footer__social:hover {
-    opacity: 0.6;
+    --ci-direction: row;
+    --ci-justify: space-between;
+    --ci-align: flex-end;
+    --ci-gap: var(--grid-gutter);
+    --ci-socials-gap: 30px;
   }
 
   /* ≤1919 — Figma 1440 */
@@ -156,9 +120,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     .footer__info {
       grid-column: 8 / -1;
       margin-top: 22px;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
+      --ci-direction: column;
+      --ci-align: flex-start;
+      --ci-gap: 5px;
     }
   }
 
@@ -182,8 +146,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     }
 
     .footer__next-label,
-    .footer__contact,
-    .footer__socials {
+    .footer__info {
       font-size: 14px;
     }
   }
@@ -214,9 +177,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     .footer__info {
       grid-column: auto;
       margin-top: 0;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
+      --ci-direction: column;
+      --ci-align: flex-start;
+      --ci-gap: 5px;
     }
   }
 </style>

@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { EMAIL, SOCIALS } from '../consts';
+import ContactInfo from '../components/ContactInfo.astro';
 ---
 
 <Layout title="About — Arina Makhova">
@@ -13,12 +13,7 @@ import { EMAIL, SOCIALS } from '../consts';
     </div>
 
     <footer class="about__footer">
-      <a href={`mailto:${EMAIL}`} class="about__email">{EMAIL}</a>
-      <div class="about__socials">
-        {SOCIALS.map((s) => (
-          <a href={s.href} class="about__social" aria-label={s.name}>{s.label}</a>
-        ))}
-      </div>
+      <ContactInfo />
     </footer>
   </article>
 </Layout>
@@ -45,32 +40,12 @@ import { EMAIL, SOCIALS } from '../consts';
     line-height: 1.4;
   }
 
-  /* Footer — flex column: email row + socials row */
+  /* Footer — wraps ContactInfo; sets its font size + gap between email and socials */
   .about__footer {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
     padding-top: 100px;
     padding-bottom: 70px;
-    font-family: var(--font-mono);
-    font-weight: 400;
     font-size: 40px;
-    line-height: 1.5;
-  }
-
-  .about__socials {
-    display: flex;
-    gap: 20px;
-  }
-
-  .about__email,
-  .about__social {
-    transition: opacity 0.2s;
-  }
-
-  .about__email:hover,
-  .about__social:hover {
-    opacity: 0.6;
+    --ci-gap: 20px;
   }
 
   /* Tablet (900–1366) */
@@ -88,7 +63,7 @@ import { EMAIL, SOCIALS } from '../consts';
     }
 
     .about__footer {
-      gap: 10px;
+      --ci-gap: 10px;
       font-size: 20px;
       padding-top: 70px;
       padding-bottom: 40px;
