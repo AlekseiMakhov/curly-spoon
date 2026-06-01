@@ -1,17 +1,33 @@
 ---
+// One block of the hover marquee. `type` is 'image' | 'video' | 'text'.
+// image/video need `src`; `ratio` (e.g. "4/5", "1/1", "9/16") or `width` (e.g. "320px")
+// pin the box — omit both to size by the media's natural proportions (so widths vary).
+// text takes `value`, or falls back to the description tagline.
+interface MarqueeBlock {
+  type: string;
+  src?: string;
+  value?: string;
+  ratio?: string;
+  width?: string;
+}
+
 interface Props {
   slug: string;
   index: string;
   title: string;
   cover: string;
-  hoverImages: string[];
   description: string;
+  marquee: MarqueeBlock[];
 }
 
-const { slug, index, title, cover, hoverImages, description } = Astro.props;
+const { slug, index, title, cover, description, marquee } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const withBase = (path: string) => `${base}${path}`;
 const tagline = description.split('. ')[0] + '.';
+
+// Optional per-block sizing -> inline style; empty string when the block sizes naturally.
+const mediaStyle = (b: MarqueeBlock) =>
+  [b.ratio && `aspect-ratio:${b.ratio}`, b.width && `width:${b.width}`].filter(Boolean).join(';');
 ---
 
 <a href={withBase(`/works/${slug}`)} class="work-item">
@@ -29,10 +45,15 @@ const tagline = description.split('. ')[0] + '.';
             <span class="work-item__marquee-index">{index}</span>
             <span class="work-item__marquee-heading">{title}</span>
           </span>
-          {hoverImages.map((src) => (
-            <img class="work-item__marquee-img" src={withBase(src)} alt="" loading="eager" />
+          {marquee.map((block) => (
+            block.type === 'video' ? (
+              <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} autoplay loop muted playsinline></video>
+            ) : block.type === 'text' ? (
+              <p class="work-item__marquee-desc">{block.value ?? tagline}</p>
+            ) : (
+              <img class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} alt="" loading="eager" />
+            )
           ))}
-          <p class="work-item__marquee-desc">{tagline}</p>
         </div>
       ))}
     </div>
@@ -173,11 +194,11 @@ const tagline = description.split('. ')[0] + '.';
     text-transform: lowercase;
   }
 
-  .work-item__marquee-img {
-    width: auto;
+  .work-item__marquee-media {
+    display: block;
+    width: auto;        /* natural width; a block's ratio/width can pin it */
     height: 100%;
-    aspect-ratio: 4/5;
-    object-fit: cover;
+    object-fit: cover;  /* fills the box when ratio/width is set */
     flex-shrink: 0;
   }
 
@@ -185,7 +206,9 @@ const tagline = description.split('. ')[0] + '.';
     font-family: var(--font-mono);
     font-size: 18px;
     line-height: 1.5;
-    max-width: 280px;
+    width: 460px;
+    /* 70px clear on each side: 40px track gap + 30px margin */
+    margin-inline: 30px;
     color: var(--color-bg);
     flex-shrink: 0;
   }

@@ -6,8 +6,7 @@ import omut from '../content/works/omut.json';
 import blanc from '../content/works/blanc.json';
 // balmain is kept in content but hidden for now (not enough material yet)
 
-type Work = typeof omut & { hoverImages: string[] };
-const works = [gisou, omut, blanc] as Work[];
+const works = [gisou, omut, blanc];
 ---
 
 <Layout title="Arina Makhova — Works">
@@ -18,8 +17,8 @@ const works = [gisou, omut, blanc] as Work[];
         index={work.index}
         title={work.title}
         cover={work.cover}
-        hoverImages={work.hoverImages}
         description={work.description}
+        marquee={work.marquee}
       />
     ))}
   </section>
