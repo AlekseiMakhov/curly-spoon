@@ -53,6 +53,9 @@ Edit the JSON in `src/content/works/<slug>.json`. Each file has:
 - `next` — slug of the next project (cycles)
 - `description` — body text on detail page
 - `cover` — path to cover image shown on homepage hover + mobile thumbnail
+- `marquee` — ordered blocks for the homepage hover marquee (the project name is prepended automatically). Each block:
+  - `{ "type": "image", "src": … }` / `{ "type": "video", "src": … }` — media; sized by its natural proportions unless pinned with `ratio` (e.g. `"4/5"`, `"9/16"`) or `width` (e.g. `"320px"`)
+  - `{ "type": "text" }` — caption (460px wide, 70px side gaps); uses the project `description`, or pass `"value"` to override
 - `gallery` — ordered array of rows, each with:
   - `cols: 1` — full-width image or video
   - `cols: 2` — two-column row; requires `pair` (second image/video path)

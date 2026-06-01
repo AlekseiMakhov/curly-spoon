@@ -1,0 +1,135 @@
+---
+interface Props {
+  index: string;
+  title: string;
+  description: string;
+}
+
+const { index, title, description } = Astro.props;
+---
+
+<header class="project__header">
+  <div class="project__head">
+    <span class="project__index">{index}</span>
+    <h1 class="project__title">{title}</h1>
+  </div>
+  <p class="project__desc">{description}</p>
+</header>
+
+<style>
+  .project__header {
+    max-width: var(--grid-max);
+    margin-inline: auto;
+    /* top = gap above the title, bottom = gap below the description (Figma) */
+    padding: 20px var(--page-padding) 100px;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gutter);
+  }
+
+  /* Index + title, offset to start at column 4 (per Figma) */
+  .project__head {
+    grid-column: 4 / -1;
+    position: relative;
+    padding-left: 60px; /* title sits past the hanging index */
+  }
+
+  .project__index {
+    position: absolute;
+    left: 0;
+    top: 58px; /* superscript: 58px below the title top (Figma) */
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  .project__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 200px;
+    line-height: 1;
+    text-transform: lowercase;
+  }
+
+  /* description spans columns 4–11, aligned under the title */
+  .project__desc {
+    grid-column: 4 / 12;
+    padding-left: 60px;
+    margin-top: 30px;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  /* ≤1919 — Figma 1440: title 150 (line-height stays 100%) */
+  @media (max-width: 1919px) {
+    .project__header {
+      padding-top: 20px;
+      padding-bottom: 80px;
+    }
+
+    .project__title {
+      font-size: 150px;
+    }
+
+    .project__index {
+      top: 42px;
+    }
+
+    .project__desc {
+      margin-top: 40px;
+    }
+  }
+
+  /* ≤1439 — Figma 1024: title 100 */
+  @media (max-width: 1439px) {
+    .project__header {
+      padding-top: 10px;
+      padding-bottom: 60px;
+    }
+
+    .project__title {
+      font-size: 100px;
+      line-height: 1.2;
+    }
+
+    .project__index {
+      top: 35px;
+    }
+
+    .project__desc {
+      margin-top: 20px;
+    }
+  }
+
+  /* ≤1023 — Figma 874/402: title 70, content full-width */
+  @media (max-width: 1023px) {
+    .project__header {
+      padding-top: 10px;
+      padding-bottom: 50px;
+    }
+
+    .project__head {
+      grid-column: 1 / -1;
+      padding-left: 30px;
+    }
+
+    .project__index {
+      top: 26px;
+      font-size: 14px;
+    }
+
+    .project__title {
+      font-size: 70px;
+    }
+
+    .project__desc {
+      grid-column: 1 / -1;
+      padding-left: 30px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  }
+</style>

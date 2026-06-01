@@ -1,0 +1,185 @@
+---
+import ContactInfo from './ContactInfo.astro';
+
+interface Props {
+  nextSlug: string;
+  nextTitle: string;
+}
+
+const { nextSlug, nextTitle } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<footer class="project__footer">
+  <a href={`${base}/works/${nextSlug}`} class="footer__next">
+    <span class="footer__next-label">next</span>
+    <span class="footer__next-title">{nextTitle} <span class="footer__arrow">→</span></span>
+  </a>
+
+  <div class="footer__info">
+    <ContactInfo label="Contact me" />
+  </div>
+</footer>
+
+<style>
+  /* Project footer: next-link (left, col 1) · info = contact + socials (right) */
+  .project__footer {
+    max-width: var(--grid-max);
+    margin-inline: auto;
+    padding: 100px var(--page-padding) 0; /* top = gap to title; height set by min-height */
+    min-height: 270px;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gutter);
+    align-items: start;
+    align-content: start;
+  }
+
+  /* Next-project link: small "next" label hangs left of the big title */
+  .footer__next {
+    grid-column: 1 / 7;
+    position: relative;
+    padding-left: 75px;
+  }
+
+  .footer__next-label {
+    position: absolute;
+    left: 0;
+    top: 32px;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  .footer__next-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 100px;
+    line-height: 1.2;
+    text-transform: lowercase;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+
+  .footer__next:hover .footer__next-title {
+    opacity: 0.6;
+  }
+
+  .footer__arrow {
+    font-size: 0.8em;
+  }
+
+  /* contact (col 7) + socials (right), bottom-aligned — layout passed to ContactInfo via vars */
+  .footer__info {
+    grid-column: 7 / -1;
+    margin-top: 37px;
+    font-size: 20px;
+    --ci-direction: row;
+    --ci-justify: space-between;
+    --ci-align: flex-end;
+    --ci-gap: var(--grid-gutter);
+    --ci-socials-gap: 30px;
+  }
+
+  /* ≤1919 — Figma 1440 */
+  @media (max-width: 1919px) {
+    .project__footer {
+      min-height: 225px;
+      padding-top: 50px;
+    }
+
+    .footer__next-title {
+      font-size: 80px;
+    }
+
+    .footer__next-label {
+      top: 45px;
+    }
+
+    .footer__info {
+      margin-top: 50px;
+    }
+  }
+
+  /* ≤1439 — Figma 1024: info (contact + socials) becomes a right-aligned column */
+  @media (max-width: 1439px) {
+    .project__footer {
+      min-height: 230px;
+      padding-top: 58px;
+    }
+
+    .footer__next-title {
+      font-size: 70px;
+    }
+
+    .footer__next-label {
+      top: 22px;
+    }
+
+    .footer__info {
+      grid-column: 8 / -1;
+      margin-top: 22px;
+      --ci-direction: column;
+      --ci-align: flex-start;
+      --ci-gap: 5px;
+    }
+  }
+
+  /* ≤1023 — Figma 874 */
+  @media (max-width: 1023px) {
+    .project__footer {
+      min-height: 163px;
+      padding-top: 40px;
+    }
+
+    .footer__next-title {
+      font-size: 60px;
+    }
+
+    .footer__next-label {
+      top: 19px;
+    }
+
+    .footer__info {
+      margin-top: 20px;
+    }
+
+    .footer__next-label,
+    .footer__info {
+      font-size: 14px;
+    }
+  }
+
+  /* ≤900 — footer stacks vertically; "next" sits above the title */
+  @media (max-width: 900px) {
+    .project__footer {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
+      min-height: 0;
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    .footer__next {
+      display: flex;
+      flex-direction: column;
+      padding-left: 0;
+    }
+
+    .footer__next-label {
+      position: static;
+      top: auto;
+    }
+
+    .footer__info {
+      grid-column: auto;
+      margin-top: 0;
+      --ci-direction: column;
+      --ci-align: flex-start;
+      --ci-gap: 5px;
+    }
+  }
+</style>

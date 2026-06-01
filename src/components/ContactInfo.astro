@@ -1,0 +1,58 @@
+---
+import { EMAIL, SOCIALS } from '../consts';
+
+interface Props {
+  label?: string;
+}
+
+const { label } = Astro.props;
+---
+
+<div class="contact-info">
+  <div class="contact-info__contact">
+    {label && <span class="contact-info__label">{label}</span>}
+    <a href={`mailto:${EMAIL}`} class="contact-info__email">{EMAIL}</a>
+  </div>
+
+  <div class="contact-info__socials">
+    {SOCIALS.map((s) => (
+      <a href={s.href} class="contact-info__social" aria-label={s.name}>{s.label}</a>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Layout is driven by the parent via inherited custom properties + font-size,
+     so this works as a column (menu / About) or a bottom-aligned row (project footer). */
+  .contact-info {
+    display: flex;
+    flex-direction: var(--ci-direction, column);
+    justify-content: var(--ci-justify, flex-start);
+    align-items: var(--ci-align, flex-start);
+    gap: var(--ci-gap, 5px);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .contact-info__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .contact-info__socials {
+    display: flex;
+    gap: var(--ci-socials-gap, 20px);
+  }
+
+  .contact-info__email,
+  .contact-info__social {
+    transition: opacity 0.2s;
+  }
+
+  .contact-info__email:hover,
+  .contact-info__social:hover {
+    opacity: 0.6;
+  }
+</style>

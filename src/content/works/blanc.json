@@ -5,7 +5,14 @@
   "next": "gisou",
   "description": "A visual exploration of liquid richness, gloss, and high-end materiality. Built through a hybrid 3D + AI workflow. Pushing beyond traditional rendering to achieve heightened realism and controlled abstraction.",
   "cover": "/media/blanc/cover.jpg",
-  "hoverImages": ["/media/blanc/01.jpg", "/media/blanc/02.jpg", "/media/blanc/03.jpg"],
+  "marquee": [
+    { "type": "image", "src": "/media/blanc/01.jpg" },
+    { "type": "image", "src": "/media/blanc/02.jpg" },
+    { "type": "image", "src": "/media/blanc/03.jpg" },
+    { "type": "text" },
+    { "type": "image", "src": "/media/blanc/04.jpg" },
+    { "type": "image", "src": "/media/blanc/01.jpg" }
+  ],
   "gallery": [
     { "type": "image", "src": "/media/blanc/01.jpg", "cols": 1 },
     { "type": "image", "src": "/media/blanc/02.jpg", "cols": 2, "pair": "/media/blanc/03.jpg" },
