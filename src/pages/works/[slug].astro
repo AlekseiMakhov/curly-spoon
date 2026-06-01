@@ -3,17 +3,18 @@ import Layout from '../../layouts/Layout.astro';
 import ProjectGallery from '../../components/ProjectGallery.astro';
 import gisou from '../../content/works/gisou.json';
 import omut from '../../content/works/omut.json';
-import balmain from '../../content/works/balmain.json';
+import blanc from '../../content/works/blanc.json';
+// balmain is kept in content but hidden for now (not enough material yet)
 
 export function getStaticPaths() {
   return [
     { params: { slug: 'gisou' } },
     { params: { slug: 'omut' } },
-    { params: { slug: 'balmain' } },
+    { params: { slug: 'blanc' } },
   ];
 }
 
-const worksMap: Record<string, typeof gisou> = { gisou, omut, balmain };
+const worksMap: Record<string, typeof gisou> = { gisou, omut, blanc };
 const { slug } = Astro.params;
 const work = worksMap[slug];
 const nextWork = worksMap[work.next];
@@ -68,6 +69,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     font-size: clamp(60px, 7.5vw, 130px);
     line-height: 1;
     letter-spacing: -0.02em;
+    text-transform: lowercase;
   }
 
   .project__desc {
@@ -113,6 +115,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     font-size: clamp(60px, 4.6vw, 80px);
     line-height: 1;
     letter-spacing: -0.02em;
+    text-transform: lowercase;
     transition: opacity 0.2s;
   }
 
