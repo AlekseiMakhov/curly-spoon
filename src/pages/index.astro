@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import WorkItem from '../components/WorkItem.astro';
 import gisou from '../content/works/gisou.json';
 import omut from '../content/works/omut.json';
 import blanc from '../content/works/blanc.json';
@@ -7,250 +8,27 @@ import blanc from '../content/works/blanc.json';
 
 type Work = typeof omut & { hoverImages: string[] };
 const works = [gisou, omut, blanc] as Work[];
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const withBase = (path: string) => `${base}${path}`;
 ---
 
 <Layout title="Arina Makhova — Works">
   <section class="works">
-    {works.map((work) => {
-      const tagline = work.description.split('. ')[0] + '.';
-      return (
-        <a href={withBase(`/works/${work.slug}`)} class="work-item">
-          <div class="work-item__content">
-            <span class="work-item__index">{work.index}</span>
-            <h2 class="work-item__title">{work.title}</h2>
-            <img class="work-item__thumb" src={withBase(work.cover)} alt="" loading="lazy" />
-          </div>
-          <div class="work-item__marquee" aria-hidden="true">
-            <div class="work-item__marquee-inner">
-              <div class="work-item__marquee-track">
-                <span class="work-item__marquee-name">
-                  <span class="work-item__marquee-index">{work.index}</span>
-                  <span class="work-item__marquee-heading">{work.title}</span>
-                </span>
-                {work.hoverImages.map((src) => (
-                  <img class="work-item__marquee-img" src={withBase(src)} alt="" loading="eager" />
-                ))}
-                <p class="work-item__marquee-desc">{tagline}</p>
-              </div>
-              <div class="work-item__marquee-track" aria-hidden="true">
-                <span class="work-item__marquee-name">
-                  <span class="work-item__marquee-index">{work.index}</span>
-                  <span class="work-item__marquee-heading">{work.title}</span>
-                </span>
-                {work.hoverImages.map((src) => (
-                  <img class="work-item__marquee-img" src={withBase(src)} alt="" loading="eager" />
-                ))}
-                <p class="work-item__marquee-desc">{tagline}</p>
-              </div>
-            </div>
-          </div>
-        </a>
-      );
-    })}
+    {works.map((work) => (
+      <WorkItem
+        slug={work.slug}
+        index={work.index}
+        title={work.title}
+        cover={work.cover}
+        hoverImages={work.hoverImages}
+        description={work.description}
+      />
+    ))}
   </section>
 </Layout>
 
 <style>
   .works {
     padding-top: var(--nav-height);
-  }
-
-  .work-item {
-    display: block;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: background-color 0.25s;
-  }
-
-  .work-item:hover {
-    background-color: var(--color-text);
-  }
-
-  /* Static index + title aligned to the grid; the marquee stays full-bleed. */
-  .work-item__content {
-    max-width: var(--grid-max);
-    margin-inline: auto;
-    padding-inline: var(--page-padding);
-    height: 320px;
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-  }
-
-  .work-item__index {
-    font-family: var(--font-mono);
-    font-weight: 300;
-    font-size: 20px;
-    line-height: 1.5;
-    margin-top: 82px;
-    transition: opacity 0.15s;
-  }
-
-  .work-item__title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 250px;
-    line-height: 0.8;
-    margin-top: 30px;
-    text-transform: lowercase;
-    transition: opacity 0.15s;
-  }
-
-  .work-item:hover .work-item__index,
-  .work-item:hover .work-item__title {
-    opacity: 0;
-  }
-
-  .work-item__thumb {
-    display: none;
-  }
-
-  /* Marquee overlay */
-  .work-item__marquee {
-    position: absolute;
-    inset: 0;
-    padding-block: 18px;
-    overflow: hidden;
-    display: none;
-    pointer-events: none;
-    container-type: inline-size; /* 100cqw = row width (no scrollbar), matches the .container math */
-  }
-
-  .work-item:hover .work-item__marquee {
-    display: block;
-  }
-
-  /* Two identical tracks side by side, scrolling in lockstep for a seamless loop */
-  .work-item__marquee-inner {
-    display: flex;
-    height: 100%;
-  }
-
-  .work-item__marquee-track {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    height: 100%;
-    gap: var(--gap-gallery);
-    /* Leading gap = page text's left edge (same math as .container; 100cqw = row width).
-       It lives INSIDE the looped period, so it recurs identically at every seam ->
-       the loop is flash-free, and the first item starts exactly on the page grid. */
-    padding-left: max(var(--page-padding), calc((100cqw - var(--grid-max)) / 2 + var(--page-padding)));
-    /* -100% = one track's own border-box width (box-sizing: border-box is global),
-       so track 2 lands exactly on track 1 -> seamless, no jump. */
-    animation: marquee-loop 14s linear 0.1s infinite backwards;
-  }
-
-  /* Held at the grid edge during the 0.1s delay (backwards fill), then one continuous linear scroll */
-  @keyframes marquee-loop {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-100%); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .work-item__marquee-track {
-      animation: none;
-    }
-  }
-
-  /* Number + name pair — same offsets as the static .work-item__content */
-  .work-item__marquee-name {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    flex-shrink: 0;
-    align-self: flex-start;
-    margin-top: -18px; /* cancel .work-item__marquee padding-block so offsets are from the row top */
-  }
-
-  .work-item__marquee-index {
-    font-family: var(--font-mono);
-    font-weight: 300;
-    font-size: 20px;
-    line-height: 1.5;
-    margin-top: 82px;
-    color: var(--color-bg);
-    flex-shrink: 0;
-  }
-
-  .work-item__marquee-heading {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 250px;
-    line-height: 0.8;
-    margin-top: 30px;
-    color: var(--color-bg);
-    flex-shrink: 0;
-    white-space: nowrap;
-    text-transform: lowercase;
-  }
-
-  .work-item__marquee-img {
-    width: auto;
-    height: 100%;
-    aspect-ratio: 4/5;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-
-  .work-item__marquee-desc {
-    font-family: var(--font-mono);
-    font-size: 18px;
-    line-height: 1.5;
-    max-width: 280px;
-    color: var(--color-bg);
-    flex-shrink: 0;
-  }
-
-  /* Mobile */
-  @media (max-width: 900px) {
-    .work-item__content {
-      height: auto;
-      display: grid;
-      grid-template-columns: 1fr 100px;
-      grid-template-rows: auto auto;
-      align-items: center;
-      gap: 0 12px;
-    }
-
-    .work-item:hover {
-      background-color: transparent;
-    }
-
-    .work-item:hover .work-item__index,
-    .work-item:hover .work-item__title {
-      opacity: 1;
-    }
-
-    .work-item__index {
-      font-size: 20px;
-      margin-top: 0;
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .work-item__title {
-      font-size: clamp(48px, 14vw, 60px);
-      line-height: 1;
-      margin-top: 0;
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    .work-item__thumb {
-      display: block;
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      grid-column: 2;
-      grid-row: 1 / 3;
-    }
-
-    .work-item__marquee {
-      display: none !important;
-    }
+    /* line below the last project (separators above each project live in WorkItem) */
+    border-bottom: 1.5px solid var(--color-text);
   }
 </style>

@@ -1,0 +1,241 @@
+---
+interface Props {
+  slug: string;
+  index: string;
+  title: string;
+  cover: string;
+  hoverImages: string[];
+  description: string;
+}
+
+const { slug, index, title, cover, hoverImages, description } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (path: string) => `${base}${path}`;
+const tagline = description.split('. ')[0] + '.';
+---
+
+<a href={withBase(`/works/${slug}`)} class="work-item">
+  <div class="work-item__content">
+    <span class="work-item__index">{index}</span>
+    <h2 class="work-item__title">{title}</h2>
+    <img class="work-item__thumb" src={withBase(cover)} alt="" loading="lazy" />
+  </div>
+
+  <div class="work-item__marquee" aria-hidden="true">
+    <div class="work-item__marquee-inner">
+      {[0, 1].map(() => (
+        <div class="work-item__marquee-track">
+          <span class="work-item__marquee-name">
+            <span class="work-item__marquee-index">{index}</span>
+            <span class="work-item__marquee-heading">{title}</span>
+          </span>
+          {hoverImages.map((src) => (
+            <img class="work-item__marquee-img" src={withBase(src)} alt="" loading="eager" />
+          ))}
+          <p class="work-item__marquee-desc">{tagline}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</a>
+
+<style>
+  .work-item {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color 0.25s;
+    /* full-bleed separator above each project (and between them) */
+    border-top: 1.5px solid var(--color-text);
+  }
+
+  .work-item:hover {
+    background-color: var(--color-text);
+  }
+
+  /* Static index + title aligned to the grid; the marquee stays full-bleed. */
+  .work-item__content {
+    max-width: var(--grid-max);
+    margin-inline: auto;
+    padding-inline: var(--page-padding);
+    height: 320px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .work-item__index {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 1.5;
+    margin-top: 82px;
+    transition: opacity 0.15s;
+  }
+
+  .work-item__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 250px;
+    line-height: 0.8;
+    margin-top: 30px;
+    text-transform: lowercase;
+    transition: opacity 0.15s;
+  }
+
+  .work-item:hover .work-item__index,
+  .work-item:hover .work-item__title {
+    opacity: 0;
+  }
+
+  .work-item__thumb {
+    display: none;
+  }
+
+  /* Marquee overlay */
+  .work-item__marquee {
+    position: absolute;
+    inset: 0;
+    padding-block: 18px;
+    overflow: hidden;
+    display: none;
+    pointer-events: none;
+    container-type: inline-size; /* 100cqw = row width (no scrollbar), matches the .container math */
+  }
+
+  .work-item:hover .work-item__marquee {
+    display: block;
+  }
+
+  /* Two identical tracks side by side, scrolling in lockstep for a seamless loop */
+  .work-item__marquee-inner {
+    display: flex;
+    height: 100%;
+  }
+
+  .work-item__marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    height: 100%;
+    gap: var(--gap-gallery);
+    /* Leading gap = page text's left edge (same math as .container; 100cqw = row width).
+       It lives INSIDE the looped period, so it recurs identically at every seam ->
+       the loop is flash-free, and the first item starts exactly on the page grid. */
+    padding-left: max(var(--page-padding), calc((100cqw - var(--grid-max)) / 2 + var(--page-padding)));
+    /* -100% = one track's own border-box width (box-sizing: border-box is global),
+       so track 2 lands exactly on track 1 -> seamless, no jump. */
+    animation: marquee-loop 14s linear 0.1s infinite backwards;
+  }
+
+  /* Held at the grid edge during the 0.1s delay (backwards fill), then one continuous linear scroll */
+  @keyframes marquee-loop {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work-item__marquee-track {
+      animation: none;
+    }
+  }
+
+  /* Number + name pair — same offsets as the static .work-item__content */
+  .work-item__marquee-name {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: -18px; /* cancel .work-item__marquee padding-block so offsets are from the row top */
+  }
+
+  .work-item__marquee-index {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 1.5;
+    margin-top: 82px;
+    color: var(--color-bg);
+    flex-shrink: 0;
+  }
+
+  .work-item__marquee-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 250px;
+    line-height: 0.8;
+    margin-top: 30px;
+    color: var(--color-bg);
+    flex-shrink: 0;
+    white-space: nowrap;
+    text-transform: lowercase;
+  }
+
+  .work-item__marquee-img {
+    width: auto;
+    height: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .work-item__marquee-desc {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    line-height: 1.5;
+    max-width: 280px;
+    color: var(--color-bg);
+    flex-shrink: 0;
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .work-item__content {
+      height: auto;
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      grid-template-rows: auto auto;
+      align-items: center;
+      gap: 0 12px;
+    }
+
+    .work-item:hover {
+      background-color: transparent;
+    }
+
+    .work-item:hover .work-item__index,
+    .work-item:hover .work-item__title {
+      opacity: 1;
+    }
+
+    .work-item__index {
+      font-size: 20px;
+      margin-top: 0;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .work-item__title {
+      font-size: clamp(48px, 14vw, 60px);
+      line-height: 1;
+      margin-top: 0;
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .work-item__thumb {
+      display: block;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+
+    .work-item__marquee {
+      display: none !important;
+    }
+  }
+</style>
