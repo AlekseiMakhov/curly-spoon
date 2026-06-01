@@ -1,0 +1,112 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { EMAIL, SOCIALS } from '../consts';
+---
+
+<Layout title="About — Arina Makhova">
+  <article class="about">
+    <div class="about__texts">
+      <p class="about__text">Working across 3D design, AI, and motion, I create visuals that capture attention and elevate products and brands.</p>
+      <p class="about__text">With a background in graphic design, I gradually shifted my focus toward 3D and motion, drawn by their ability to bring ideas to life through movement, depth, and storytelling. Inspired by the intersection of art and technology, I’m constantly exploring new tools, techniques, and creative possibilities.</p>
+      <p class="about__text">I’m particularly interested in beauty, jewelry, fashion, and consumer technology, creating visual experiences for brands that value strong design and a distinctive identity.</p>
+      <p class="about__text">I’m always open to new collaborations and creative projects. Feel free to get in touch if you’d like to work together or discuss an idea. You can reach me via email or through my social channels.</p>
+    </div>
+
+    <footer class="about__footer">
+      <a href={`mailto:${EMAIL}`} class="about__email">{EMAIL}</a>
+      <div class="about__socials">
+        {SOCIALS.map((s) => (
+          <a href={s.href} class="about__social" aria-label={s.name}>{s.label}</a>
+        ))}
+      </div>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  /* Same grid container as the rest of the site */
+  .about {
+    max-width: var(--grid-max);
+    margin-inline: auto;
+    padding-inline: var(--page-padding);
+    padding-top: calc(var(--nav-height) + 100px); /* 100 below the header */
+  }
+
+  .about__texts {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .about__text {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 1.4;
+  }
+
+  /* Footer — flex column: email row + socials row */
+  .about__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 100px;
+    padding-bottom: 70px;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.5;
+  }
+
+  .about__socials {
+    display: flex;
+    gap: 20px;
+  }
+
+  .about__email,
+  .about__social {
+    transition: opacity 0.2s;
+  }
+
+  .about__email:hover,
+  .about__social:hover {
+    opacity: 0.6;
+  }
+
+  /* Tablet (900–1366) */
+  @media (max-width: 1366px) {
+    .about {
+      padding-top: calc(var(--nav-height) + 50px);
+    }
+
+    .about__texts {
+      gap: 40px;
+    }
+
+    .about__text {
+      font-size: 40px;
+    }
+
+    .about__footer {
+      gap: 10px;
+      font-size: 20px;
+      padding-top: 70px;
+      padding-bottom: 40px;
+    }
+  }
+
+  /* Mobile (<900) */
+  @media (max-width: 900px) {
+    .about__texts {
+      gap: 30px;
+    }
+
+    .about__text {
+      font-size: 30px;
+    }
+
+    .about__footer {
+      padding-bottom: 30px;
+    }
+  }
+</style>
