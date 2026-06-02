@@ -14,9 +14,13 @@
     { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-05.mp4" }
   ],
   "gallery": [
-    { "type": "image", "src": "/media/omut/01.jpg", "cols": 1 },
-    { "type": "image", "src": "/media/omut/02.jpg", "cols": 2, "pair": "/media/omut/03.jpg" },
-    { "type": "image", "src": "/media/omut/04.jpg", "cols": 1 },
-    { "type": "image", "src": "/media/omut/05.jpg", "cols": 2, "pair": "/media/omut/06.jpg" }
+    { "type": "video", "file": "OMUT-01.mp4", "ratio": "16/9" },
+    { "type": "image", "file": "OMUT-02.jpg", "ratio": "3/4" },
+    { "type": "video", "file": "OMUT-03.mp4", "ratio": "3/4" },
+    { "type": "image", "file": "OMUT-04.jpg", "ratio": "3/4" },
+    { "type": "video", "file": "OMUT-05.mp4", "ratio": "3/4" },
+    { "type": "video", "file": "OMUT-06.mp4", "ratio": "16/9" },
+    { "type": "image", "file": "OMUT-07.jpg", "ratio": "3/4" },
+    { "type": "image", "file": "OMUT-08.jpg", "ratio": "3/4" }
   ]
 }

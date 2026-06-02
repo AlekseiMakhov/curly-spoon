@@ -1,0 +1,47 @@
+---
+// Native responsive image: ships the 480 / 900 / 1440 / 1920 variants as a srcset and
+// lets the browser pick the best one for the viewport AND pixel density. `sizes` is the
+// CSS width the image renders at; defaults to full-bleed. `ratio` reserves the box (no
+// layout shift) and shows a skeleton until the image paints.
+import { MEDIA_WIDTHS, mediaSrc } from '../consts';
+
+interface Props {
+  path: string;     // '<project>/<file>', e.g. 'omut/OMUT-02.jpg' (width folder added by mediaSrc)
+  ratio?: string;   // 'W/H', e.g. '3/4' — reserves the box + skeleton while loading
+  sizes?: string;   // CSS width the image renders at (e.g. '50vw', '100vw')
+  eager?: boolean;  // above-the-fold image: load eagerly instead of lazily
+  alt?: string;
+  class?: string;
+}
+const { path, ratio, sizes = '100vw', eager = false, alt = '', class: className } = Astro.props;
+
+const srcset = MEDIA_WIDTHS.map((w) => `${mediaSrc(path, w)} ${w}w`).join(', ');
+const fallback = mediaSrc(path, MEDIA_WIDTHS[MEDIA_WIDTHS.length - 1]);
+---
+
+<img
+  class:list={['rimg', 'media-skeleton', className]}
+  src={fallback}
+  srcset={srcset}
+  sizes={sizes}
+  alt={alt}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  style={ratio ? `aspect-ratio:${ratio}` : undefined}
+/>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('img.rimg').forEach((img) => {
+    if (img.complete && img.naturalWidth) img.classList.add('is-loaded');
+    else img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
+  });
+</script>
+
+<style>
+  .rimg {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+</style>

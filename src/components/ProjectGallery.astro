@@ -1,80 +1,158 @@
 ---
-interface GalleryItem {
-  type: 'image' | 'video';
-  src: string;
-  cols: 1 | 2 | 3;
-  pair?: string;
-  pair2?: string;
-}
+import ResponsiveImage from './ResponsiveImage.astro';
+import ResponsiveVideo from './ResponsiveVideo.astro';
+
+// Responsive (R2) items — { type, file, ratio }. Rows are grouped by ratio:
+//   16/9 → 1 per row, 3/4 → 2, 9/16 → 3; everything collapses to one-per-row ≤480px.
+//   The first video loads + plays eagerly; the rest lazy-load near the viewport.
+// Legacy items — { type, src, cols, pair, pair2 } — keep the old local rendering until a
+// project's media is moved to R2.
+interface RItem { type: 'image' | 'video'; file: string; ratio: string; }
+interface LItem { type: 'image' | 'video'; src: string; cols: 1 | 2 | 3; pair?: string; pair2?: string; }
 
 interface Props {
-  items: GalleryItem[];
+  slug: string;
+  items: (RItem | LItem)[];
+}
+const { slug, items } = Astro.props;
+
+const COLS: Record<string, number> = { '16/9': 1, '3/4': 2, '9/16': 3 };
+const SIZES: Record<number, string> = {
+  1: '100vw',
+  2: '(max-width: 480px) 100vw, 50vw',
+  3: '(max-width: 480px) 100vw, 33vw',
+};
+
+const responsive = items.length > 0 && 'ratio' in items[0];
+const ritems = items as RItem[];
+const litems = items as LItem[];
+
+// Group the flat list into rows (row size = columns for that ratio).
+const rows: { items: RItem[]; cols: number; start: number }[] = [];
+const firstVideo = ritems.findIndex((it) => it.type === 'video');
+if (responsive) {
+  for (let i = 0; i < ritems.length; ) {
+    const n = COLS[ritems[i].ratio] ?? 1;
+    rows.push({ items: ritems.slice(i, i + n), cols: n, start: i });
+    i += n;
+  }
 }
 
-const { items } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const withBase = (path: string) => `${base}${path}`;
+const withBase = (p: string) => `${base}${p}`;
 ---
 
-<div class="gallery">
-  {items.map((item) => {
-    if (item.cols === 1) {
-      return (
-        <div class="gallery__row gallery__row--full">
-          {item.type === 'video' ? (
-            <video src={withBase(item.src)} autoplay loop muted playsinline />
-          ) : (
-            <img src={withBase(item.src)} alt="" loading="lazy" />
-          )}
-        </div>
-      );
-    }
-
-    if (item.cols === 2 && item.pair) {
-      return (
-        <div class="gallery__row gallery__row--2col">
-          <div class="gallery__cell">
+{responsive ? (
+  <div class="rgallery">
+    {rows.map((row) => (
+      <div class="rgallery__row" data-cols={row.cols}>
+        {row.items.map((it, j) => (
+          <div class="rgallery__cell">
+            {it.type === 'video' ? (
+              <ResponsiveVideo path={`${slug}/${it.file}`} ratio={it.ratio} eager={row.start + j === firstVideo} />
+            ) : (
+              <ResponsiveImage path={`${slug}/${it.file}`} ratio={it.ratio} sizes={SIZES[row.cols]} eager={row.start === 0} />
+            )}
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+) : (
+  <div class="gallery">
+    {litems.map((item) => {
+      if (item.cols === 1) {
+        return (
+          <div class="gallery__row gallery__row--full">
             {item.type === 'video' ? (
               <video src={withBase(item.src)} autoplay loop muted playsinline />
             ) : (
               <img src={withBase(item.src)} alt="" loading="lazy" />
             )}
           </div>
-          <div class="gallery__cell">
-            <img src={withBase(item.pair)} alt="" loading="lazy" />
+        );
+      }
+      if (item.cols === 2 && item.pair) {
+        return (
+          <div class="gallery__row gallery__row--2col">
+            <div class="gallery__cell">
+              {item.type === 'video' ? (
+                <video src={withBase(item.src)} autoplay loop muted playsinline />
+              ) : (
+                <img src={withBase(item.src)} alt="" loading="lazy" />
+              )}
+            </div>
+            <div class="gallery__cell"><img src={withBase(item.pair)} alt="" loading="lazy" /></div>
           </div>
-        </div>
-      );
-    }
-
-    if (item.cols === 3 && item.pair && item.pair2) {
-      return (
-        <div class="gallery__row gallery__row--3col">
-          <div class="gallery__cell">
-            <img src={withBase(item.src)} alt="" loading="lazy" />
+        );
+      }
+      if (item.cols === 3 && item.pair && item.pair2) {
+        return (
+          <div class="gallery__row gallery__row--3col">
+            <div class="gallery__cell"><img src={withBase(item.src)} alt="" loading="lazy" /></div>
+            <div class="gallery__cell gallery__cell--video"><video src={withBase(item.pair)} autoplay loop muted playsinline /></div>
+            <div class="gallery__cell gallery__cell--video"><video src={withBase(item.pair2)} autoplay loop muted playsinline /></div>
           </div>
-          <div class="gallery__cell gallery__cell--video">
-            <video src={withBase(item.pair)} autoplay loop muted playsinline />
-          </div>
-          <div class="gallery__cell gallery__cell--video">
-            <video src={withBase(item.pair2)} autoplay loop muted playsinline />
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  })}
-</div>
+        );
+      }
+      return null;
+    })}
+  </div>
+)}
 
 <style>
+  /* ── Responsive gallery (R2 media) — on the project's 12 / 6-col grid ── */
+  .rgallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-gallery);
+  }
+
+  .rgallery__row {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gutter);
+  }
+
+  /* Span across the grid by ratio: 16/9 = full, 3/4 = half (6 of 12), 9/16 = third (4) */
+  .rgallery__cell {
+    grid-column: 1 / -1;
+  }
+
+  .rgallery__row[data-cols='2'] .rgallery__cell {
+    grid-column: span 6;
+  }
+
+  .rgallery__row[data-cols='3'] .rgallery__cell {
+    grid-column: span 4;
+  }
+
+  /* 6-col grid ≤900: half = 3, third = 2 */
+  @media (max-width: 900px) {
+    .rgallery__row[data-cols='2'] .rgallery__cell {
+      grid-column: span 3;
+    }
+
+    .rgallery__row[data-cols='3'] .rgallery__cell {
+      grid-column: span 2;
+    }
+  }
+
+  /* ≤480: everything full-width, one per row.
+     Selector matches the [data-cols] span rules' specificity so it actually wins. */
+  @media (max-width: 480px) {
+    .rgallery__row[data-cols] .rgallery__cell {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ── Legacy gallery (local media, pre-R2) ── */
   .gallery {
     display: flex;
     flex-direction: column;
     gap: var(--gap-gallery);
   }
 
-  /* Full-width row */
   .gallery__row--full {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -87,7 +165,6 @@ const withBase = (path: string) => `${base}${path}`;
     object-fit: cover;
   }
 
-  /* Rows sit on the layout grid (12 cols desktop / 6 cols ≤900px) */
   .gallery__row--2col,
   .gallery__row--3col {
     display: grid;
@@ -99,7 +176,6 @@ const withBase = (path: string) => `${base}${path}`;
     overflow: hidden;
   }
 
-  /* 2-column row — two equal halves (6 of 12 cols, or 3 of 6) */
   .gallery__row--2col .gallery__cell {
     grid-column: span 6;
     aspect-ratio: 3 / 4;
@@ -112,7 +188,6 @@ const withBase = (path: string) => `${base}${path}`;
     object-fit: cover;
   }
 
-  /* 3-column row — left is image, right two are 9:16 videos (4 of 12 cols, or 2 of 6) */
   .gallery__row--3col {
     align-items: end;
   }
@@ -134,7 +209,6 @@ const withBase = (path: string) => `${base}${path}`;
   }
 
   @media (max-width: 900px) {
-    /* 6-column grid: halves span 3, thirds span 2 */
     .gallery__row--2col .gallery__cell {
       grid-column: span 3;
     }

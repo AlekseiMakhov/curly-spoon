@@ -35,3 +35,7 @@ pnpm-debug.log*
 # claude / mcp local config
 .claude/
 .mcp.json
+
+# heavy gallery source media — variants are generated from these, uploaded to R2,
+# and served from there; the originals don't belong in the repo / Pages build
+public/media/*/project/
