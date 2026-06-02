@@ -6,13 +6,12 @@
   "description": "Inspired by Omut’s jewelry collections, this series explores the interplay of ice and metal, translating the brand’s bold aesthetic into sculptural forms, sharp details, and reflective surfaces.",
   "cover": "/media/omut/01.jpg",
   "marquee": [
-    { "type": "image", "src": "/media/omut/01.jpg" },
-    { "type": "image", "src": "/media/omut/04.jpg" },
-    { "type": "image", "src": "/media/omut/03.jpg" },
+    { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-01.mp4", "ratio": "498 / 280" },
     { "type": "text" },
-    { "type": "image", "src": "/media/omut/02.jpg" },
-    { "type": "image", "src": "/media/omut/05.jpg" },
-    { "type": "image", "src": "/media/omut/06.jpg" }
+    { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-02.mp4" },
+    { "type": "image", "src": "/media/omut/preview/OMUT-PREVIEW-03.jpg" },
+    { "type": "image", "src": "/media/omut/preview/OMUT-PREVIEW-04.jpg" },
+    { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-05.mp4" }
   ],
   "gallery": [
     { "type": "image", "src": "/media/omut/01.jpg", "cols": 1 },

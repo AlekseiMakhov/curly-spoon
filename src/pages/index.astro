@@ -9,7 +9,10 @@ import blanc from '../content/works/blanc.json';
 const works = [gisou, omut, blanc];
 ---
 
-<Layout title="Arina Makhova — Works">
+<Layout
+  title="Arina Makhova — Works"
+  preloadFonts={['/fonts/Sharphy-SemiBold.woff2', '/fonts/silkamono-regular-webfont.woff2', '/fonts/silkamono-light-webfont.woff2']}
+>
   <section class="works">
     {works.map((work) => (
       <WorkItem
