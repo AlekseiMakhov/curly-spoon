@@ -6,12 +6,12 @@
   "description": "A visual exploration of liquid richness, gloss, and high-end materiality. Built through a hybrid 3D + AI workflow. Pushing beyond traditional rendering to achieve heightened realism and controlled abstraction.",
   "cover": "/media/blanc/cover.jpg",
   "marquee": [
-    { "type": "image", "src": "/media/blanc/01.jpg" },
-    { "type": "image", "src": "/media/blanc/02.jpg" },
-    { "type": "image", "src": "/media/blanc/03.jpg" },
+    { "type": "placeholder" },
+    { "type": "placeholder" },
+    { "type": "placeholder" },
     { "type": "text" },
-    { "type": "image", "src": "/media/blanc/04.jpg" },
-    { "type": "image", "src": "/media/blanc/01.jpg" }
+    { "type": "placeholder" },
+    { "type": "placeholder" }
   ],
   "gallery": [
     { "type": "image", "src": "/media/blanc/01.jpg", "cols": 1 },

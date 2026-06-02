@@ -22,7 +22,10 @@ const work = worksMap[slug];
 const nextWork = worksMap[work.next];
 ---
 
-<Layout title={`${work.title} — Arina Makhova`}>
+<Layout
+  title={`${work.title} — Arina Makhova`}
+  preloadFonts={['/fonts/Sharphy-SemiBold.woff2', '/fonts/silkamono-regular-webfont.woff2']}
+>
   <article class="project">
     <ProjectHeader index={work.index} title={work.title} description={work.description} />
 

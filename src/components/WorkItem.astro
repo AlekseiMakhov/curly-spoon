@@ -1,8 +1,8 @@
 ---
-// One block of the hover marquee. `type` is 'image' | 'video' | 'text'.
-// image/video need `src`; `ratio` (e.g. "4/5", "1/1", "9/16") or `width` (e.g. "320px")
-// pin the box — omit both to size by the media's natural proportions (so widths vary).
-// text takes `value`, or falls back to the description tagline.
+// One block of the hover marquee. `type` is 'image' | 'video' | 'text' | 'placeholder'.
+// image/video need `src`; cells default to a 3:4 box — set `ratio` (e.g. "4/5",
+// "9/16") or `width` (e.g. "320px") to override. text takes `value`, or falls back
+// to the description tagline. placeholder is an empty skeleton cell (no media yet).
 interface MarqueeBlock {
   type: string;
   src?: string;
@@ -50,6 +50,8 @@ const mediaStyle = (b: MarqueeBlock) =>
               <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} autoplay loop muted playsinline></video>
             ) : block.type === 'text' ? (
               <p class="work-item__marquee-desc">{block.value ?? tagline}</p>
+            ) : block.type === 'placeholder' ? (
+              <div class="work-item__marquee-media work-item__marquee-media--skeleton" style={mediaStyle(block)} aria-hidden="true"></div>
             ) : (
               <img class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} alt="" loading="eager" />
             )
@@ -59,6 +61,32 @@ const mediaStyle = (b: MarqueeBlock) =>
     </div>
   </div>
 </a>
+
+<script>
+  // Constant marquee speed for every project: duration = track width / SPEED.
+  // Cells reserve their size via CSS aspect-ratio, so the track width is correct the
+  // moment the strip is shown — independent of when the videos/images finish loading.
+  // That lets us measure once on reveal; nothing re-measures mid-scroll, which is what
+  // stuttered before (the duration was being recomputed as each video's metadata
+  // trickled in and nudged the layout).
+  const SPEED = 200; // pixels per second — single knob for the marquee speed
+
+  const setDuration = (item: HTMLElement, track: Element) => {
+    const width = track.getBoundingClientRect().width; // border-box, matches translateX(-100%)
+    if (width) item.style.setProperty('--marquee-duration', (width / SPEED).toFixed(2) + 's');
+  };
+
+  document.querySelectorAll<HTMLElement>('.work-item').forEach((item) => {
+    const track = item.querySelector('.work-item__marquee-track');
+    if (!track) return;
+    item.addEventListener('pointerenter', () => setDuration(item, track));
+    let raf = 0;
+    addEventListener('resize', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setDuration(item, track));
+    });
+  });
+</script>
 
 <style>
   .work-item {
@@ -147,7 +175,14 @@ const mediaStyle = (b: MarqueeBlock) =>
     padding-left: max(var(--page-padding), calc((100cqw - var(--grid-max)) / 2 + var(--page-padding)));
     /* -100% = one track's own border-box width (box-sizing: border-box is global),
        so track 2 lands exactly on track 1 -> seamless, no jump. */
-    animation: marquee-loop 14s linear 0.1s infinite backwards;
+    /* Duration is set per-item by the script below (= width / SPEED) so the pixel
+       speed is constant for every project; 14s is the pre-JS fallback. */
+    animation: marquee-loop var(--marquee-duration, 14s) linear 0.1s infinite backwards;
+  }
+
+  /* Promote the moving strip to its own GPU layer only while it's actually scrolling */
+  .work-item:hover .work-item__marquee-track {
+    will-change: transform;
   }
 
   /* Held at the grid edge during the 0.1s delay (backwards fill), then one continuous linear scroll */
@@ -157,7 +192,8 @@ const mediaStyle = (b: MarqueeBlock) =>
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .work-item__marquee-track {
+    .work-item__marquee-track,
+    .work-item__marquee-media--skeleton {
       animation: none;
     }
   }
@@ -196,10 +232,31 @@ const mediaStyle = (b: MarqueeBlock) =>
 
   .work-item__marquee-media {
     display: block;
-    width: auto;        /* natural width; a block's ratio/width can pin it */
     height: 100%;
-    object-fit: cover;  /* fills the box when ratio/width is set */
+    /* Reserve each cell's size up front: a still-loading or missing cell stays a
+       sized box (not 0-width), and the strip no longer reflows as videos pop in.
+       3:4 matches the optimized thumbnails; a block's ratio/width overrides it. */
+    aspect-ratio: 3 / 4;
+    width: auto;
+    object-fit: cover;
     flex-shrink: 0;
+    /* Placeholder colour behind the media; the image/video paints over it once
+       loaded, so a still-loading cell reads as a plain grey box. */
+    background-color: var(--color-placeholder);
+  }
+
+  /* Empty placeholder cells (a project with no media yet) get an animated skeleton
+     sheen. Scoped to placeholders so the scrolling video cells stay paint-cheap. */
+  .work-item__marquee-media--skeleton {
+    background-image: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.07) 50%, transparent 60%);
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    animation: marquee-skeleton 1.4s linear infinite;
+  }
+
+  @keyframes marquee-skeleton {
+    from { background-position: 150% 0; }
+    to   { background-position: -150% 0; }
   }
 
   .work-item__marquee-desc {

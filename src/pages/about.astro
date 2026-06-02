@@ -3,7 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import ContactInfo from '../components/ContactInfo.astro';
 ---
 
-<Layout title="About — Arina Makhova">
+<Layout
+  title="About — Arina Makhova"
+  preloadFonts={['/fonts/Sharphy-Regular.woff2', '/fonts/silkamono-regular-webfont.woff2']}
+>
   <article class="about">
     <div class="about__texts">
       <p class="about__text">Working across 3D design, AI, and motion, I create visuals that capture attention and elevate products and brands.</p>
