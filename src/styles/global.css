@@ -125,3 +125,28 @@ ul {
   grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   column-gap: var(--grid-gutter);
 }
+
+/* ── Loading skeleton for responsive media ── */
+/* Pair with an `aspect-ratio` (from each gallery item's `ratio`) so the box is reserved
+   and a shimmer shows until the image/video paints; JS adds `is-loaded` once it's in. */
+.media-skeleton {
+  background-color: var(--color-placeholder);
+  background-image: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.06) 50%, transparent 60%);
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  animation: media-skeleton 1.4s linear infinite;
+}
+
+.media-skeleton.is-loaded {
+  background: none;
+  animation: none;
+}
+
+@keyframes media-skeleton {
+  from { background-position: 150% 0; }
+  to   { background-position: -150% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-skeleton { animation: none; }
+}

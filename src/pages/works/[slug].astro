@@ -16,7 +16,8 @@ export function getStaticPaths() {
   ];
 }
 
-const worksMap: Record<string, typeof gisou> = { gisou, omut, blanc };
+// Galleries differ in shape per project (R2 vs legacy), so keep this loose.
+const worksMap: Record<string, any> = { gisou, omut, blanc };
 const { slug } = Astro.params;
 const work = worksMap[slug];
 const nextWork = worksMap[work.next];
@@ -30,7 +31,7 @@ const nextWork = worksMap[work.next];
     <ProjectHeader index={work.index} title={work.title} description={work.description} />
 
     <div class="project__gallery">
-      <ProjectGallery items={work.gallery} />
+      <ProjectGallery slug={slug} items={work.gallery} />
     </div>
 
     <ProjectFooter nextSlug={nextWork.slug} nextTitle={nextWork.title} />

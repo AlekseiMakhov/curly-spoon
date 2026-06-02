@@ -1,0 +1,63 @@
+---
+// Loads the variant whose width fits the viewport (480 / 900 / 1440 / 1920), since
+// <video> has no srcset. `eager` videos load + play immediately on navigation; the rest
+// load + play only near the viewport, so a gallery of big clips doesn't pull every file
+// at once. The variant is chosen once (resizing never swaps a playing video's src).
+// `ratio` reserves the box (no layout shift) and shows a skeleton until the first frame.
+interface Props {
+  path: string;     // '<project>/<file>', e.g. 'omut/OMUT-01.mp4' (width folder added by mediaSrc)
+  ratio?: string;   // 'W/H', e.g. '16/9' — reserves the box + skeleton while loading
+  poster?: string;  // first-frame image, shown instantly while the clip buffers
+  eager?: boolean;  // hero video: start downloading + playing right away
+  class?: string;
+}
+const { path, ratio, poster, eager = false, class: className } = Astro.props;
+---
+
+<video
+  class:list={['rvideo', 'media-skeleton', className]}
+  data-path={path}
+  data-eager={eager ? 'true' : undefined}
+  poster={poster}
+  style={ratio ? `aspect-ratio:${ratio}` : undefined}
+  loop
+  muted
+  playsinline
+  preload="none"
+></video>
+
+<script>
+  import { mediaSrc, pickWidth } from '../consts';
+
+  const load = (v: HTMLVideoElement) => {
+    if (v.dataset.loaded) return;
+    v.dataset.loaded = '1';
+    v.preload = 'auto';
+    v.addEventListener('loadeddata', () => v.classList.add('is-loaded'), { once: true });
+    v.src = mediaSrc(v.dataset.path!, pickWidth(window.innerWidth));
+  };
+  const play = (v: HTMLVideoElement) => { const p = v.play(); if (p) p.catch(() => {}); };
+
+  const all = [...document.querySelectorAll<HTMLVideoElement>('.rvideo')];
+
+  // Hero video(s): load + play immediately (the poster bridges the buffer).
+  all.filter((v) => v.dataset.eager).forEach((v) => { load(v); play(v); });
+
+  // The rest: load + play only near the viewport; pause when scrolled away.
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting) { load(v); play(v); } else if (v.dataset.loaded) v.pause();
+    }
+  }, { rootMargin: '300px 0px' });
+  all.filter((v) => !v.dataset.eager).forEach((v) => io.observe(v));
+</script>
+
+<style>
+  .rvideo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+</style>
