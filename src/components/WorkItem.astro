@@ -47,7 +47,7 @@ const mediaStyle = (b: MarqueeBlock) =>
           </span>
           {marquee.map((block) => (
             block.type === 'video' ? (
-              <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} autoplay loop muted playsinline></video>
+              <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} loop muted playsinline preload="auto"></video>
             ) : block.type === 'text' ? (
               <p class="work-item__marquee-desc">{block.value ?? tagline}</p>
             ) : block.type === 'placeholder' ? (
@@ -63,29 +63,63 @@ const mediaStyle = (b: MarqueeBlock) =>
 </a>
 
 <script>
-  // Constant marquee speed for every project: duration = track width / SPEED.
-  // Cells reserve their size via CSS aspect-ratio, so the track width is correct the
-  // moment the strip is shown — independent of when the videos/images finish loading.
-  // That lets us measure once on reveal; nothing re-measures mid-scroll, which is what
-  // stuttered before (the duration was being recomputed as each video's metadata
-  // trickled in and nudged the layout).
+  // Marquee scroll (rAF, constant px/sec) + video playback limited to the clip under
+  // the cursor — playing several previews at once stuttered the idle scroll.
   const SPEED = 200; // pixels per second — single knob for the marquee speed
 
-  const setDuration = (item: HTMLElement, track: Element) => {
-    const width = track.getBoundingClientRect().width; // border-box, matches translateX(-100%)
-    if (width) item.style.setProperty('--marquee-duration', (width / SPEED).toFixed(2) + 's');
-  };
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLElement>('.work-item').forEach((item) => {
+      const marquee = item.querySelector<HTMLElement>('.work-item__marquee');
+      const inner = item.querySelector<HTMLElement>('.work-item__marquee-inner');
+      const track = item.querySelector('.work-item__marquee-track');
+      if (!marquee || !inner || !track) return;
 
-  document.querySelectorAll<HTMLElement>('.work-item').forEach((item) => {
-    const track = item.querySelector('.work-item__marquee-track');
-    if (!track) return;
-    item.addEventListener('pointerenter', () => setDuration(item, track));
-    let raf = 0;
-    addEventListener('resize', () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setDuration(item, track));
+      // Scroll the strip (rAF; constant px/sec; wrap at one track-width = seamless).
+      let rafId = 0, x = 0, prev = 0, startedAt = 0, wrap = 0;
+      const frame = (t: number) => {
+        if (!startedAt) { startedAt = t; prev = t; }
+        const dt = Math.min((t - prev) / 1000, 0.05); // cap so a stalled frame can't jump the strip
+        prev = t;
+        if (!wrap) wrap = track.getBoundingClientRect().width;
+        if (t - startedAt >= 100) { x += SPEED * dt; if (wrap) x %= wrap; }
+        inner.style.transform = `translateX(${-x}px)`;
+        rafId = requestAnimationFrame(frame);
+      };
+
+      // Play ONLY the clip directly under the cursor — even one always-playing clip still
+      // stutters the idle scroll, so default to nothing playing (smooth) and bring a clip
+      // to life only while the pointer is over it (re-checked as the strip scrolls under a
+      // still cursor).
+      const videos = [...item.querySelectorAll<HTMLVideoElement>('.work-item__marquee video')];
+      let hovered = false, mx = -1, my = -1, pickTimer = 0;
+      const playUnderCursor = () => {
+        if (!hovered) return;
+        let target: HTMLVideoElement | null = null;
+        for (const v of videos) {
+          const r = v.getBoundingClientRect();
+          if (mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom) { target = v; break; }
+        }
+        for (const v of videos) {
+          if (v === target) { const p = v.play(); if (p) p.catch(() => {}); } else v.pause();
+        }
+      };
+
+      item.addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; playUnderCursor(); });
+      item.addEventListener('pointerenter', (e) => {
+        hovered = true; mx = e.clientX; my = e.clientY;
+        if (!rafId) { x = 0; prev = 0; startedAt = 0; wrap = track.getBoundingClientRect().width; rafId = requestAnimationFrame(frame); }
+        pickTimer = window.setInterval(playUnderCursor, 80); // re-check as the strip scrolls under a still cursor
+        playUnderCursor();
+      });
+      item.addEventListener('pointerleave', () => {
+        hovered = false;
+        clearInterval(pickTimer);
+        videos.forEach((v) => v.pause());
+        cancelAnimationFrame(rafId); rafId = 0;
+        inner.style.transform = '';
+      });
     });
-  });
+  }
 </script>
 
 <style>
@@ -173,26 +207,17 @@ const mediaStyle = (b: MarqueeBlock) =>
        It lives INSIDE the looped period, so it recurs identically at every seam ->
        the loop is flash-free, and the first item starts exactly on the page grid. */
     padding-left: max(var(--page-padding), calc((100cqw - var(--grid-max)) / 2 + var(--page-padding)));
-    /* -100% = one track's own border-box width (box-sizing: border-box is global),
-       so track 2 lands exactly on track 1 -> seamless, no jump. */
-    /* Duration is set per-item by the script below (= width / SPEED) so the pixel
-       speed is constant for every project; 14s is the pre-JS fallback. */
-    animation: marquee-loop var(--marquee-duration, 14s) linear 0.1s infinite backwards;
+    /* track 2 sits flush after track 1; the script wraps at one track-width, so the
+       loop is seamless. */
   }
 
-  /* Promote the moving strip to its own GPU layer only while it's actually scrolling */
-  .work-item:hover .work-item__marquee-track {
+  /* Promote the moving strip while hovered so its per-frame transform (set by the
+     script) composites on the GPU. */
+  .work-item:hover .work-item__marquee-inner {
     will-change: transform;
   }
 
-  /* Held at the grid edge during the 0.1s delay (backwards fill), then one continuous linear scroll */
-  @keyframes marquee-loop {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-100%); }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .work-item__marquee-track,
     .work-item__marquee-media--skeleton {
       animation: none;
     }
