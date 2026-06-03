@@ -139,10 +139,15 @@ const withBase = (p: string) => `${base}${p}`;
   }
 
   /* ≤480: everything full-width, one per row.
-     Selector matches the [data-cols] span rules' specificity so it actually wins. */
+     Selector matches the [data-cols] span rules' specificity so it actually wins.
+     The cells now stack as grid rows, so add row-gap to keep the gallery rhythm. */
   @media (max-width: 480px) {
     .rgallery__row[data-cols] .rgallery__cell {
       grid-column: 1 / -1;
+    }
+
+    .rgallery__row {
+      row-gap: var(--gap-gallery);
     }
   }
 

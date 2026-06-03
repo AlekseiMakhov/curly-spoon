@@ -4,6 +4,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentPath = Astro.url.pathname;
 const isHome = currentPath === `${base}/` || currentPath === base;
 const isAbout = currentPath.startsWith(`${base}/about`);
+const isPlayground = currentPath.startsWith(`${base}/playground`);
 ---
 
 <header class="nav">
@@ -11,7 +12,10 @@ const isAbout = currentPath.startsWith(`${base}/about`);
     <a href={`${base}/`} class="nav__logo">Arina Makhova</a>
 
     <nav class="nav__links" aria-label="Main navigation">
-      <a href={`${base}/`} class:list={['nav__link', 'nav__link--projects', { active: isHome }]}>Projects</a>
+      <span class="nav__links-left">
+        <a href={`${base}/`} class:list={['nav__link', 'nav__link--projects', { active: isHome }]}>Projects</a>
+        <a href={`${base}/playground`} class:list={['nav__link', 'nav__link--playground', { active: isPlayground }]}>Playground</a>
+      </span>
       <a href={`${base}/about`} class:list={['nav__link', 'nav__link--about', { active: isAbout }]}>About</a>
     </nav>
 
@@ -30,6 +34,7 @@ const isAbout = currentPath.startsWith(`${base}/about`);
 
     <nav class="nav__mobile-nav" aria-label="Mobile navigation">
       <a href={`${base}/`} class="nav__mobile-link">Projects</a>
+      <a href={`${base}/playground`} class="nav__mobile-link">Playground</a>
       <a href={`${base}/about`} class="nav__mobile-link">About</a>
     </nav>
 
@@ -109,9 +114,13 @@ const isAbout = currentPath.startsWith(`${base}/about`);
     mix-blend-mode: difference;
   }
 
-  .nav__link--projects {
+  /* Projects + Playground grouped from column 4; fixed gap between them */
+  .nav__links-left {
     grid-column: 4;
     justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 100px;
   }
 
   .nav__link--about {
@@ -226,6 +235,13 @@ const isAbout = currentPath.startsWith(`${base}/about`);
   /* Bottom contact block — sets the font size; ContactInfo handles the rest */
   .nav__mobile-contact {
     font-size: 14px;
+  }
+
+  /* Tablet — tighter gap between Projects and Playground */
+  @media (max-width: 1439px) {
+    .nav__links-left {
+      gap: 70px;
+    }
   }
 
   @media (max-width: 900px) {

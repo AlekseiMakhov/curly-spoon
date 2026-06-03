@@ -64,6 +64,17 @@
   --gap-gallery: var(--grid-gutter);
 }
 
+/* Breakpoints: ≥1440 desktop · <1440 tablet · <900 mobile-landscape · <480 mobile-portrait */
+
+/* Tablet — 900–1439px: same 12-col grid, tighter gutter/margin. */
+@media (max-width: 1439px) {
+  :root {
+    --grid-gutter: 30px;
+    --grid-margin: 30px;
+  }
+}
+
+/* Mobile landscape — 480–899px: drop to 6 columns, shorter nav. */
 @media (max-width: 900px) {
   :root {
     --grid-columns: 6;
@@ -72,6 +83,9 @@
     --nav-height: 70px;
   }
 }
+
+/* Mobile portrait — ≤480px: gallery rows collapse to one column (see ProjectGallery.astro);
+   gutter/margin stay at 20px inherited from the landscape band. */
 
 /* ── Reset ── */
 *, *::before, *::after {
@@ -103,6 +117,29 @@ img, video {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Animated underline on hover — same effect as the header nav links.
+   Add to any link; the 1px line scales in from the left. */
+.hover-underline {
+  position: relative;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s;
+}
+
+.hover-underline:hover::after {
+  transform: scaleX(1);
 }
 
 ul {

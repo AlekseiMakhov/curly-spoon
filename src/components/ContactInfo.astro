@@ -11,12 +11,12 @@ const { label } = Astro.props;
 <div class="contact-info">
   <div class="contact-info__contact">
     {label && <span class="contact-info__label">{label}</span>}
-    <a href={`mailto:${EMAIL}`} class="contact-info__email">{EMAIL}</a>
+    <a href={`mailto:${EMAIL}`} class="contact-info__email hover-underline">{EMAIL}</a>
   </div>
 
   <div class="contact-info__socials">
     {SOCIALS.map((s) => (
-      <a href={s.href} class="contact-info__social" aria-label={s.name}>{s.label}</a>
+      <a href={s.href} class="contact-info__social hover-underline" aria-label={s.name}>{s.label}</a>
     ))}
   </div>
 </div>
@@ -46,13 +46,10 @@ const { label } = Astro.props;
     gap: var(--ci-socials-gap, 20px);
   }
 
+  /* Hover effect comes from the global `.hover-underline` utility.
+     Keep links shrink-to-content so the underline matches the text width. */
   .contact-info__email,
   .contact-info__social {
-    transition: opacity 0.2s;
-  }
-
-  .contact-info__email:hover,
-  .contact-info__social:hover {
-    opacity: 0.6;
+    align-self: flex-start;
   }
 </style>
