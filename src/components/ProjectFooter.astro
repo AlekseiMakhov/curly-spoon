@@ -13,7 +13,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <footer class="project__footer">
   <a href={`${base}/works/${nextSlug}`} class="footer__next">
     <span class="footer__next-label">next</span>
-    <span class="footer__next-title">{nextTitle} <span class="footer__arrow">→</span></span>
+    <span class="footer__next-title hover-underline">{nextTitle} <span class="footer__arrow">→</span></span>
   </a>
 
   <div class="footer__info">
@@ -59,11 +59,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     line-height: 1.2;
     text-transform: lowercase;
     white-space: nowrap;
-    transition: opacity 0.2s;
   }
 
-  .footer__next:hover .footer__next-title {
-    opacity: 0.6;
+  /* Underline animates when hovering anywhere on the link (incl. the "next" label) */
+  .footer__next:hover .footer__next-title::after {
+    transform: scaleX(1);
   }
 
   .footer__arrow {
