@@ -5,19 +5,19 @@ import ProjectHeader from '../../components/ProjectHeader.astro';
 import ProjectFooter from '../../components/ProjectFooter.astro';
 import gisou from '../../content/works/gisou.json';
 import omut from '../../content/works/omut.json';
-import blanc from '../../content/works/blanc.json';
+import lancel from '../../content/works/lancel.json';
 // balmain is kept in content but hidden for now (not enough material yet)
 
 export function getStaticPaths() {
   return [
     { params: { slug: 'gisou' } },
     { params: { slug: 'omut' } },
-    { params: { slug: 'blanc' } },
+    { params: { slug: 'lancel' } },
   ];
 }
 
 // Galleries differ in shape per project (R2 vs legacy), so keep this loose.
-const worksMap: Record<string, any> = { gisou, omut, blanc };
+const worksMap: Record<string, any> = { gisou, omut, lancel };
 const { slug } = Astro.params;
 const work = worksMap[slug];
 const nextWork = worksMap[work.next];

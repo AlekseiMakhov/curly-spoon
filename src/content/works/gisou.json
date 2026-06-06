@@ -13,6 +13,13 @@
     { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-04.mp4" },
     { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-05.mp4" }
   ],
+  "swiper": [
+    "/media/gisou/swiper/GISOU-MOBILE-01.jpg",
+    "/media/gisou/swiper/GISOU-MOBILE-02.jpg",
+    "/media/gisou/swiper/GISOU-MOBILE-03.jpg",
+    "/media/gisou/swiper/GISOU-MOBILE-04.jpg",
+    "/media/gisou/swiper/GISOU-MOBILE-05.jpg"
+  ],
   "gallery": [
     { "type": "image", "file": "GISOU-01.jpg", "ratio": "16/9" },
     { "type": "video", "file": "GISOU-02.mp4", "ratio": "3/4" },

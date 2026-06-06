@@ -2,7 +2,7 @@
   "slug": "omut",
   "index": "02",
   "title": "OMUT",
-  "next": "blanc",
+  "next": "lancel",
   "description": "Inspired by Omut’s jewelry collections, this series explores the interplay of ice and metal, translating the brand’s bold aesthetic into sculptural forms, sharp details, and reflective surfaces.",
   "cover": "/media/omut/01.jpg",
   "marquee": [
@@ -12,6 +12,13 @@
     { "type": "image", "src": "/media/omut/preview/OMUT-PREVIEW-03.jpg" },
     { "type": "image", "src": "/media/omut/preview/OMUT-PREVIEW-04.jpg" },
     { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-05.mp4" }
+  ],
+  "swiper": [
+    "/media/omut/swiper/OMUT-MOBILE-01.jpg",
+    "/media/omut/swiper/OMUT-MOBILE-02.jpg",
+    "/media/omut/swiper/OMUT-MOBILE-03.jpg",
+    "/media/omut/swiper/OMUT-MOBILE-04.jpg",
+    "/media/omut/swiper/OMUT-MOBILE-05.jpg"
   ],
   "gallery": [
     { "type": "video", "file": "OMUT-01.mp4", "ratio": "16/9" },

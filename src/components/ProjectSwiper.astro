@@ -1,0 +1,156 @@
+---
+// Per-project image swiper for the works list on tablet / mobile (replaces the
+// old scroll carousel). Three cards are visible: an enlarged active card in the
+// centre with its two neighbours ~75% under it (25% peek). No arrows; swipe only
+// on touchscreens.
+//
+// The transition is a CROSS-MORPH, not a linear drag-follow: on swipe the active
+// card shrinks + fades as it slides to a neighbour slot, while the next neighbour
+// grows + fades in as it slides to the centre. Cards are positioned by role and
+// CSS-transition between roles when the active index changes. Multi-instance safe.
+interface Props {
+  images: string[];
+  name: string;
+  loop?: boolean;
+}
+
+const { images, name, loop = true } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (p: string) => (/^https?:\/\//.test(p) ? p : `${base}${p}`);
+const count = images.length;
+---
+
+<div class="pswiper" data-pswiper data-loop={String(loop)}>
+  <div class="pswiper__viewport">
+    {images.map((src, i) => (
+      <div
+        class:list={['pswiper__slide', { 'is-active': i === 0 }]}
+        aria-roledescription="slide"
+        aria-label={`${name} — ${i + 1} of ${count}`}
+        aria-current={i === 0 ? 'true' : 'false'}
+        data-pswiper-slide
+      >
+        <img
+          class="pswiper__img"
+          src={withBase(src)}
+          width="493"
+          height="660"
+          alt={`${name} — ${i + 1}`}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  const SCALE = 280 / 330; // inactive card height (280) relative to active (330)
+  const SWIPE_MIN = 40;    // px — horizontal distance that counts as a swipe
+
+  document.querySelectorAll<HTMLElement>('[data-pswiper]').forEach((root) => {
+    const viewport = root.querySelector<HTMLElement>('.pswiper__viewport');
+    if (!viewport) return;
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-pswiper-slide]')];
+    const n = slides.length;
+    if (!n) return;
+    const loop = root.dataset.loop === 'true';
+    let active = 0;
+
+    const render = () => {
+      const w = slides[active].offsetWidth || 0;
+      // neighbour-centre offset that puts a (scaled) neighbour 75% under the active card
+      const offset = (w * (2 - SCALE)) / 4;
+      slides.forEach((s, j) => {
+        let d = j - active;
+        if (loop) {
+          if (d > n / 2) d -= n;
+          if (d < -n / 2) d += n;
+        }
+        const ad = Math.abs(d);
+        const isActive = d === 0;
+        s.classList.toggle('is-active', isActive);
+        s.setAttribute('aria-current', isActive ? 'true' : 'false');
+        s.style.zIndex = String(100 - ad);
+        s.style.opacity = isActive ? '1' : ad === 1 ? '0.5' : '0';
+        s.style.transform = `translate(-50%, -50%) translateX(${d * offset}px) scale(${isActive ? 1 : SCALE})`;
+      });
+    };
+
+    const go = (dir: number) => {
+      if (loop) active = (active + dir + n) % n;
+      else active = Math.min(n - 1, Math.max(0, active + dir));
+      render();
+    };
+
+    // Swipe — touch only; no movement during the drag, the morph plays on release.
+    // `swiped` suppresses the wrapping <a>'s click so a swipe browses instead of
+    // opening the project; a plain tap (no swipe) still navigates.
+    let startX = 0, startY = 0, tracking = false, swiped = false;
+    const link = root.closest('a');
+    viewport.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      tracking = true; swiped = false;
+    }, { passive: true });
+    viewport.addEventListener('touchend', (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) { swiped = true; go(dx < 0 ? 1 : -1); }
+    }, { passive: true });
+    link?.addEventListener('click', (e) => {
+      if (swiped) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    render();
+    // card width is fixed, but the swiper may go from hidden (desktop) to shown on resize
+    window.addEventListener('resize', render);
+  });
+</script>
+
+<style>
+  .pswiper {
+    --ps-h-active: 330px; /* active card height (background cards are scaled to 280) */
+    width: 100%;
+  }
+
+  .pswiper__viewport {
+    /* exactly the active card + its two 25%-peeking neighbours; nothing else shows */
+    position: relative;
+    height: var(--ps-h-active);
+    max-width: 360px;
+    margin-inline: auto;
+    overflow: hidden;
+    touch-action: pan-y; /* let the page scroll vertically; horizontal = our swipe */
+  }
+
+  /* Cards are stacked & positioned by role (JS); they morph between roles on swipe. */
+  .pswiper__slide {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* base; JS sets the role transform */
+    transform-origin: center;
+    transition: transform 0.22s ease, opacity 0.1s ease;
+    will-change: transform, opacity;
+  }
+
+  .pswiper__img {
+    display: block;
+    height: var(--ps-h-active);
+    width: auto;
+    aspect-ratio: 493 / 660;
+    object-fit: cover;
+    background-color: var(--color-placeholder);
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pswiper__slide {
+      transition: none;
+    }
+  }
+</style>
