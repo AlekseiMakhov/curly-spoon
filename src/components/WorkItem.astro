@@ -40,12 +40,13 @@ const mediaStyle = (b: MarqueeBlock) =>
   <div class="work-item__content">
     <div class="work-item__head">
       <span class="work-item__index">{index}</span>
-      <h2 class="work-item__title">{title}<span class="work-item__arrow" aria-hidden="true">→</span></h2>
+      <h2 class="work-item__title">{title}</h2>
     </div>
 
     {/* Tablet/mobile swiper — replaces the hover marquee below 1440px */}
     <div class="work-item__media">
       <ProjectSwiper images={swiper} name={title} />
+      <span class="work-item__cta">View project <span aria-hidden="true">→</span></span>
     </div>
   </div>
 
@@ -145,9 +146,9 @@ const mediaStyle = (b: MarqueeBlock) =>
     border-top: 1.5px solid var(--color-text);
   }
 
-  /* Desktop hover invert (≥1440 only; disabled below) */
+  /* Desktop hover: keep the main dark background, the marquee shows white text/media */
   .work-item:hover {
-    background-color: var(--color-text);
+    background-color: var(--color-bg);
   }
 
   /* Static index + title aligned to the grid; the marquee stays full-bleed. */
@@ -187,11 +188,16 @@ const mediaStyle = (b: MarqueeBlock) =>
     transition: opacity 0.15s;
   }
 
-  /* "→" after the title (footer-style); only shown below 1440 */
-  .work-item__arrow {
-    display: none;
-    margin-left: 0.3em;
-    font-size: 0.8em;
+  /* "view project →" caption under the swiper (lives in the media slot, so it's
+     hidden on desktop with it and shown below 1440). */
+  .work-item__cta {
+    display: block;
+    margin-top: 30px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   .work-item:hover .work-item__index,
@@ -264,7 +270,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     font-size: 20px;
     line-height: 1.5;
     margin-top: 82px;
-    color: var(--color-bg);
+    color: var(--color-text);
     flex-shrink: 0;
   }
 
@@ -274,7 +280,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     font-size: 250px;
     line-height: 0.8;
     margin-top: 30px;
-    color: var(--color-bg);
+    color: var(--color-text);
     flex-shrink: 0;
     white-space: nowrap;
     text-transform: lowercase;
@@ -308,7 +314,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     line-height: 1.5;
     width: 460px;
     margin-inline: 30px;
-    color: var(--color-bg);
+    color: var(--color-text);
     flex-shrink: 0;
   }
 
@@ -330,7 +336,7 @@ const mediaStyle = (b: MarqueeBlock) =>
 
     .work-item__content {
       height: auto;
-      align-items: center;
+      align-items: flex-start; /* title pinned to the top of the row, not centred */
       gap: 40px;
       padding-block: 40px;
     }
@@ -340,21 +346,21 @@ const mediaStyle = (b: MarqueeBlock) =>
       flex: 0 0 45%;
       align-items: flex-start;
       gap: 8px;
+      --wi-title: 90px; /* title size per breakpoint; also drives the index's top offset */
     }
 
     .work-item__index {
-      margin-top: 0;
+      /* push the number down so its top edge meets the title's text top */
+      margin-top: calc(var(--wi-title) * 0.26);
       align-self: flex-start;
+      line-height: 1;
+      font-size: 14px;
     }
 
     .work-item__title {
       margin-top: 0;
-      font-size: 90px; /* tablet large — estimate, tune to Figma */
+      font-size: var(--wi-title);
       line-height: 0.9;
-    }
-
-    .work-item__arrow {
-      display: inline;
     }
 
     .work-item__media {
@@ -366,8 +372,8 @@ const mediaStyle = (b: MarqueeBlock) =>
 
   /* Font size steps down at 1024 */
   @media (max-width: 1023px) {
-    .work-item__title {
-      font-size: 70px;
+    .work-item__head {
+      --wi-title: 70px;
     }
   }
 
@@ -377,15 +383,15 @@ const mediaStyle = (b: MarqueeBlock) =>
       flex-direction: column;
       align-items: stretch;
       gap: 20px;
-      padding-block: 24px;
+      padding-block: 30px;
     }
 
     .work-item__head {
       flex: none;
+      --wi-title: clamp(44px, 13vw, 60px);
     }
 
     .work-item__title {
-      font-size: clamp(44px, 13vw, 60px);
       line-height: 1;
     }
 

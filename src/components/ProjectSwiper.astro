@@ -48,6 +48,11 @@ const count = images.length;
 <script>
   const SCALE = 280 / 330; // inactive card height (280) relative to active (330)
   const SWIPE_MIN = 40;    // px — horizontal distance that counts as a swipe
+  const AUTO_MS = 1000;    // mobile auto-advance interval (~1/s)
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = () => matchMedia('(max-width: 899px)').matches; // mobile, not tablet
+
+  const instances: { viewport: HTMLElement; advance: () => void; ratio: number }[] = [];
 
   document.querySelectorAll<HTMLElement>('[data-pswiper]').forEach((root) => {
     const viewport = root.querySelector<HTMLElement>('.pswiper__viewport');
@@ -58,30 +63,45 @@ const count = images.length;
     const loop = root.dataset.loop === 'true';
     let active = 0;
 
-    const render = () => {
-      const w = slides[active].offsetWidth || 0;
-      // neighbour-centre offset that puts a (scaled) neighbour 75% under the active card
-      const offset = (w * (2 - SCALE)) / 4;
+    const DURATION = 450; // keep in sync with the transform transition (ms)
+
+    const distOf = (j: number, a: number) => {
+      let d = j - a;
+      if (loop) { if (d > n / 2) d -= n; if (d < -n / 2) d += n; }
+      return d;
+    };
+
+    // Motion: positions + scale. Applied immediately so the cards travel the whole time.
+    const applyMotion = (a: number) => {
+      const w = slides[a].offsetWidth || 0;
+      const offset = (w * (2 - SCALE)) / 4; // neighbour 75% under the active card
       slides.forEach((s, j) => {
-        let d = j - active;
-        if (loop) {
-          if (d > n / 2) d -= n;
-          if (d < -n / 2) d += n;
-        }
+        const d = distOf(j, a);
+        s.style.transform = `translate(-50%, -50%) translateX(${d * offset}px) scale(${d === 0 ? 1 : SCALE})`;
+      });
+    };
+
+    // Focus: which card is lit + on top. Swapped at the MIDDLE of the animation.
+    const applyFocus = (a: number) => {
+      slides.forEach((s, j) => {
+        const d = distOf(j, a);
         const ad = Math.abs(d);
         const isActive = d === 0;
         s.classList.toggle('is-active', isActive);
         s.setAttribute('aria-current', isActive ? 'true' : 'false');
         s.style.zIndex = String(100 - ad);
         s.style.opacity = isActive ? '1' : ad === 1 ? '0.5' : '0';
-        s.style.transform = `translate(-50%, -50%) translateX(${d * offset}px) scale(${isActive ? 1 : SCALE})`;
       });
     };
 
+    const render = () => { applyMotion(active); applyFocus(active); };
+
+    let focusTimer = 0;
     const go = (dir: number) => {
-      if (loop) active = (active + dir + n) % n;
-      else active = Math.min(n - 1, Math.max(0, active + dir));
-      render();
+      active = loop ? (active + dir + n) % n : Math.min(n - 1, Math.max(0, active + dir));
+      applyMotion(active);                                            // start travelling now
+      clearTimeout(focusTimer);
+      focusTimer = window.setTimeout(() => applyFocus(active), DURATION / 2); // focus flips mid-way
     };
 
     // Swipe — touch only; no movement during the drag, the morph plays on release.
@@ -107,7 +127,25 @@ const count = images.length;
     render();
     // card width is fixed, but the swiper may go from hidden (desktop) to shown on resize
     window.addEventListener('resize', render);
+    instances.push({ viewport, advance: () => go(1), ratio: 0 });
   });
+
+  // Mobile only: auto-advance the single most-visible swiper (~1/s) — like video
+  // autoplay when you scroll to it. Only one project ever animates at a time.
+  if (!reduce && instances.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const inst = instances.find((i) => i.viewport === e.target);
+        if (inst) inst.ratio = e.isIntersecting ? e.intersectionRatio : 0;
+      }
+    }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+    instances.forEach((i) => io.observe(i.viewport));
+    setInterval(() => {
+      if (!isMobile()) return;
+      const best = instances.filter((i) => i.ratio >= 0.5).sort((a, b) => b.ratio - a.ratio)[0];
+      if (best) best.advance();
+    }, AUTO_MS);
+  }
 </script>
 
 <style>
@@ -133,7 +171,7 @@ const count = images.length;
     top: 50%;
     transform: translate(-50%, -50%); /* base; JS sets the role transform */
     transform-origin: center;
-    transition: transform 0.22s ease, opacity 0.1s ease;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.25s ease;
     will-change: transform, opacity;
   }
 
