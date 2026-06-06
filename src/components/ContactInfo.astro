@@ -16,7 +16,7 @@ const { label } = Astro.props;
 
   <div class="contact-info__socials">
     {SOCIALS.map((s) => (
-      <a href={s.href} class="contact-info__social hover-underline" aria-label={s.name}>{s.label}</a>
+      <a href={s.href} class="contact-info__social hover-underline" aria-label={s.name} target="_blank" rel="noopener noreferrer">{s.label}</a>
     ))}
   </div>
 </div>
