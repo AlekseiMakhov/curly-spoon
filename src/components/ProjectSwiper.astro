@@ -1,11 +1,13 @@
 ---
 // Per-project image swiper for the works list on tablet / mobile (replaces the
-// old scroll carousel). Active slide is larger and centered; neighbours sit ~75%
-// UNDER it (heavy overlap), stacked by distance. No arrows; swipe only on touch.
+// old scroll carousel). Three cards are visible: an enlarged active card in the
+// centre with its two neighbours ~75% under it (25% peek). No arrows; swipe only
+// on touchscreens.
 //
-// embla centers the active slide (full-width slides => reliable centering); the
-// overlap is produced by translating each <img> toward the centre (embla never
-// touches the img, so its loop transform doesn't clobber ours). Multi-instance safe.
+// The transition is a CROSS-MORPH, not a linear drag-follow: on swipe the active
+// card shrinks + fades as it slides to a neighbour slot, while the next neighbour
+// grows + fades in as it slides to the centre. Cards are positioned by role and
+// CSS-transition between roles when the active index changes. Multi-instance safe.
 interface Props {
   images: string[];
   name: string;
@@ -20,82 +22,91 @@ const count = images.length;
 
 <div class="pswiper" data-pswiper data-loop={String(loop)}>
   <div class="pswiper__viewport">
-    <div class="pswiper__container">
-      {images.map((src, i) => (
-        <div
-          class:list={['pswiper__slide', { 'is-active': i === 0 }]}
-          aria-roledescription="slide"
-          aria-label={`${name} — ${i + 1} of ${count}`}
-          aria-current={i === 0 ? 'true' : 'false'}
-          data-pswiper-slide
-        >
-          <img
-            class="pswiper__img"
-            src={withBase(src)}
-            width="493"
-            height="660"
-            alt={`${name} — ${i + 1}`}
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-          />
-        </div>
-      ))}
-    </div>
+    {images.map((src, i) => (
+      <div
+        class:list={['pswiper__slide', { 'is-active': i === 0 }]}
+        aria-roledescription="slide"
+        aria-label={`${name} — ${i + 1} of ${count}`}
+        aria-current={i === 0 ? 'true' : 'false'}
+        data-pswiper-slide
+      >
+        <img
+          class="pswiper__img"
+          src={withBase(src)}
+          width="493"
+          height="660"
+          alt={`${name} — ${i + 1}`}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+        />
+      </div>
+    ))}
   </div>
 </div>
 
 <script>
-  import EmblaCarousel from 'embla-carousel';
-
-  // Swipe only on touchscreens; there are no arrows, so on non-touch it's a static peek.
-  const isTouch = matchMedia('(pointer: coarse)').matches;
   const SCALE = 280 / 330; // inactive card height (280) relative to active (330)
+  const SWIPE_MIN = 40;    // px — horizontal distance that counts as a swipe
 
   document.querySelectorAll<HTMLElement>('[data-pswiper]').forEach((root) => {
     const viewport = root.querySelector<HTMLElement>('.pswiper__viewport');
     if (!viewport) return;
     const slides = [...root.querySelectorAll<HTMLElement>('[data-pswiper-slide]')];
     const n = slides.length;
+    if (!n) return;
+    const loop = root.dataset.loop === 'true';
+    let active = 0;
 
-    const embla = EmblaCarousel(viewport, {
-      align: 'center',
-      loop: root.dataset.loop === 'true',
-      watchDrag: isTouch,
-    });
-
-    const layout = () => {
-      const i = embla.selectedScrollSnap();
-      const w = slides[i]?.offsetWidth || 0;          // active card width (layout)
-      // Pull a neighbour toward the centre so it sits 75% under the active card:
-      //   neighbour centre target = activeHalf - 0.5*bgHalf;  pull = emblaPitch(=w) - target
-      const pull = w * (0.5 + SCALE / 4);
+    const render = () => {
+      const w = slides[active].offsetWidth || 0;
+      // neighbour-centre offset that puts a (scaled) neighbour 75% under the active card
+      const offset = (w * (2 - SCALE)) / 4;
       slides.forEach((s, j) => {
-        const active = j === i;
-        let d = j - i;                                 // loop-aware signed distance
-        if (d > n / 2) d -= n;
-        if (d < -n / 2) d += n;
-        const ad = Math.abs(d);
-        s.classList.toggle('is-active', active);
-        s.setAttribute('aria-current', active ? 'true' : 'false');
-        s.style.zIndex = String(100 - ad);             // nearer the centre = on top
-        const img = s.querySelector<HTMLElement>('.pswiper__img');
-        if (!img) return;
-        if (ad <= 1) {
-          // active + the two immediate neighbours: form the centred trio
-          img.style.transform = `translateX(${-d * pull}px) scale(${active ? 1 : SCALE})`;
-          img.style.opacity = active ? '1' : '0.5';
-        } else {
-          // everything else stays hidden — only 3 cards are ever visible
-          img.style.transform = `scale(${SCALE})`;
-          img.style.opacity = '0';
+        let d = j - active;
+        if (loop) {
+          if (d > n / 2) d -= n;
+          if (d < -n / 2) d += n;
         }
+        const ad = Math.abs(d);
+        const isActive = d === 0;
+        s.classList.toggle('is-active', isActive);
+        s.setAttribute('aria-current', isActive ? 'true' : 'false');
+        s.style.zIndex = String(100 - ad);
+        s.style.opacity = isActive ? '1' : ad === 1 ? '0.5' : '0';
+        s.style.transform = `translate(-50%, -50%) translateX(${d * offset}px) scale(${isActive ? 1 : SCALE})`;
       });
     };
 
-    embla.on('select', layout);
-    embla.on('reInit', layout);
-    layout();
+    const go = (dir: number) => {
+      if (loop) active = (active + dir + n) % n;
+      else active = Math.min(n - 1, Math.max(0, active + dir));
+      render();
+    };
+
+    // Swipe — touch only; no movement during the drag, the morph plays on release.
+    // `swiped` suppresses the wrapping <a>'s click so a swipe browses instead of
+    // opening the project; a plain tap (no swipe) still navigates.
+    let startX = 0, startY = 0, tracking = false, swiped = false;
+    const link = root.closest('a');
+    viewport.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      tracking = true; swiped = false;
+    }, { passive: true });
+    viewport.addEventListener('touchend', (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) { swiped = true; go(dx < 0 ? 1 : -1); }
+    }, { passive: true });
+    link?.addEventListener('click', (e) => {
+      if (swiped) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    render();
+    // card width is fixed, but the swiper may go from hidden (desktop) to shown on resize
+    window.addEventListener('resize', render);
   });
 </script>
 
@@ -107,44 +118,38 @@ const count = images.length;
 
   .pswiper__viewport {
     /* exactly the active card + its two 25%-peeking neighbours; nothing else shows */
+    position: relative;
+    height: var(--ps-h-active);
     max-width: 360px;
     margin-inline: auto;
     overflow: hidden;
+    touch-action: pan-y; /* let the page scroll vertically; horizontal = our swipe */
   }
 
-  .pswiper__container {
-    display: flex;
-    align-items: center;
-  }
-
-  /* Full-width slides => embla centres the active one reliably. The image overflows
-     toward the centre (translated by JS) to overlap its neighbours. */
+  /* Cards are stacked & positioned by role (JS); they morph between roles on swipe. */
   .pswiper__slide {
-    position: relative;
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: center;
-    z-index: 1;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* base; JS sets the role transform */
+    transform-origin: center;
+    transition: transform 0.22s ease, opacity 0.1s ease;
+    will-change: transform, opacity;
   }
 
   .pswiper__img {
-    flex: none;
     display: block;
     height: var(--ps-h-active);
     width: auto;
     aspect-ratio: 493 / 660;
     object-fit: cover;
     background-color: var(--color-placeholder);
-    opacity: 0.5;
-    transform: scale(0.848); /* pre-JS fallback; JS sets translateX + scale per slide */
-    transform-origin: center;
-    transition: transform 0.4s ease, opacity 0.4s ease;
     -webkit-user-drag: none;
     user-select: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .pswiper__img {
+    .pswiper__slide {
       transition: none;
     }
   }
