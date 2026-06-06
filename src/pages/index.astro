@@ -3,10 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import WorkItem from '../components/WorkItem.astro';
 import gisou from '../content/works/gisou.json';
 import omut from '../content/works/omut.json';
-import blanc from '../content/works/blanc.json';
+import lancel from '../content/works/lancel.json';
 // balmain is kept in content but hidden for now (not enough material yet)
 
-const works = [gisou, omut, blanc];
+const works = [gisou, omut, lancel];
 ---
 
 <Layout
@@ -19,9 +19,9 @@ const works = [gisou, omut, blanc];
         slug={work.slug}
         index={work.index}
         title={work.title}
-        cover={work.cover}
         description={work.description}
         marquee={work.marquee}
+        swiper={work.swiper}
       />
     ))}
   </section>

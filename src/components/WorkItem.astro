@@ -1,8 +1,14 @@
 ---
-// One block of the hover marquee. `type` is 'image' | 'video' | 'text' | 'placeholder'.
-// image/video need `src`; cells default to a 3:4 box — set `ratio` (e.g. "4/5",
-// "9/16") or `width` (e.g. "320px") to override. text takes `value`, or falls back
-// to the description tagline. placeholder is an empty skeleton cell (no media yet).
+// One project row on the works list.
+//  - ≥1440px (desktop): hover marquee (the scrolling strip below).
+//  - <1440px (tablet/mobile): no hover — show the title (footer-style, with a "→")
+//    plus a per-project image swiper (ProjectSwiper). <900px stacks it under the title.
+//
+// `marquee` blocks (desktop strip): image/video need `src`; cells default to 3:4. text
+// takes `value` (falls back to the description tagline). placeholder = empty skeleton.
+// `swiper` is the list of tablet/mobile swiper image paths.
+import ProjectSwiper from './ProjectSwiper.astro';
+
 interface MarqueeBlock {
   type: string;
   src?: string;
@@ -15,12 +21,12 @@ interface Props {
   slug: string;
   index: string;
   title: string;
-  cover: string;
   description: string;
   marquee: MarqueeBlock[];
+  swiper: string[];
 }
 
-const { slug, index, title, cover, description, marquee } = Astro.props;
+const { slug, index, title, description, marquee, swiper } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const withBase = (path: string) => `${base}${path}`;
 const tagline = description.split('. ')[0] + '.';
@@ -32,9 +38,15 @@ const mediaStyle = (b: MarqueeBlock) =>
 
 <a href={withBase(`/works/${slug}`)} class="work-item">
   <div class="work-item__content">
-    <span class="work-item__index">{index}</span>
-    <h2 class="work-item__title">{title}</h2>
-    <img class="work-item__thumb" src={withBase(cover)} alt="" loading="lazy" />
+    <div class="work-item__head">
+      <span class="work-item__index">{index}</span>
+      <h2 class="work-item__title">{title}<span class="work-item__arrow" aria-hidden="true">→</span></h2>
+    </div>
+
+    {/* Tablet/mobile swiper — replaces the hover marquee below 1440px */}
+    <div class="work-item__media">
+      <ProjectSwiper images={swiper} name={title} />
+    </div>
   </div>
 
   <div class="work-item__marquee" aria-hidden="true">
@@ -63,11 +75,14 @@ const mediaStyle = (b: MarqueeBlock) =>
 </a>
 
 <script>
-  // Marquee scroll (rAF, constant px/sec) + video playback limited to the clip under
-  // the cursor — playing several previews at once stuttered the idle scroll.
+  // ── Desktop (≥1440): hover marquee ──
+  // Scroll the strip (rAF, constant px/sec) + play only the clip under the cursor
+  // (several playing previews stuttered the idle scroll). Tablet/mobile use the
+  // ProjectSwiper instead, so this only runs on wide viewports.
   const SPEED = 200; // pixels per second — single knob for the marquee speed
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (!reduceMotion && matchMedia('(min-width: 1440px)').matches) {
     document.querySelectorAll<HTMLElement>('.work-item').forEach((item) => {
       const marquee = item.querySelector<HTMLElement>('.work-item__marquee');
       const inner = item.querySelector<HTMLElement>('.work-item__marquee-inner');
@@ -86,10 +101,7 @@ const mediaStyle = (b: MarqueeBlock) =>
         rafId = requestAnimationFrame(frame);
       };
 
-      // Play ONLY the clip directly under the cursor — even one always-playing clip still
-      // stutters the idle scroll, so default to nothing playing (smooth) and bring a clip
-      // to life only while the pointer is over it (re-checked as the strip scrolls under a
-      // still cursor).
+      // Play ONLY the clip directly under the cursor.
       const videos = [...item.querySelectorAll<HTMLVideoElement>('.work-item__marquee video')];
       let hovered = false, mx = -1, my = -1, pickTimer = 0;
       const playUnderCursor = () => {
@@ -133,6 +145,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     border-top: 1.5px solid var(--color-text);
   }
 
+  /* Desktop hover invert (≥1440 only; disabled below) */
   .work-item:hover {
     background-color: var(--color-text);
   }
@@ -146,6 +159,13 @@ const mediaStyle = (b: MarqueeBlock) =>
     display: flex;
     align-items: flex-start;
     gap: 20px;
+  }
+
+  .work-item__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    min-width: 0;
   }
 
   .work-item__index {
@@ -167,12 +187,20 @@ const mediaStyle = (b: MarqueeBlock) =>
     transition: opacity 0.15s;
   }
 
+  /* "→" after the title (footer-style); only shown below 1440 */
+  .work-item__arrow {
+    display: none;
+    margin-left: 0.3em;
+    font-size: 0.8em;
+  }
+
   .work-item:hover .work-item__index,
   .work-item:hover .work-item__title {
     opacity: 0;
   }
 
-  .work-item__thumb {
+  /* Swiper slot — hidden on desktop (the marquee handles hover there) */
+  .work-item__media {
     display: none;
   }
 
@@ -207,12 +235,9 @@ const mediaStyle = (b: MarqueeBlock) =>
        It lives INSIDE the looped period, so it recurs identically at every seam ->
        the loop is flash-free, and the first item starts exactly on the page grid. */
     padding-left: max(var(--page-padding), calc((100cqw - var(--grid-max)) / 2 + var(--page-padding)));
-    /* track 2 sits flush after track 1; the script wraps at one track-width, so the
-       loop is seamless. */
   }
 
-  /* Promote the moving strip while hovered so its per-frame transform (set by the
-     script) composites on the GPU. */
+  /* Promote the moving strip while hovered so its per-frame transform composites on the GPU. */
   .work-item:hover .work-item__marquee-inner {
     will-change: transform;
   }
@@ -258,20 +283,13 @@ const mediaStyle = (b: MarqueeBlock) =>
   .work-item__marquee-media {
     display: block;
     height: 100%;
-    /* Reserve each cell's size up front: a still-loading or missing cell stays a
-       sized box (not 0-width), and the strip no longer reflows as videos pop in.
-       3:4 matches the optimized thumbnails; a block's ratio/width overrides it. */
     aspect-ratio: 3 / 4;
     width: auto;
     object-fit: cover;
     flex-shrink: 0;
-    /* Placeholder colour behind the media; the image/video paints over it once
-       loaded, so a still-loading cell reads as a plain grey box. */
     background-color: var(--color-placeholder);
   }
 
-  /* Empty placeholder cells (a project with no media yet) get an animated skeleton
-     sheen. Scoped to placeholders so the scrolling video cells stay paint-cheap. */
   .work-item__marquee-media--skeleton {
     background-image: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.07) 50%, transparent 60%);
     background-repeat: no-repeat;
@@ -289,23 +307,14 @@ const mediaStyle = (b: MarqueeBlock) =>
     font-size: 18px;
     line-height: 1.5;
     width: 460px;
-    /* 70px clear on each side: 40px track gap + 30px margin */
     margin-inline: 30px;
     color: var(--color-bg);
     flex-shrink: 0;
   }
 
-  /* Mobile */
-  @media (max-width: 900px) {
-    .work-item__content {
-      height: auto;
-      display: grid;
-      grid-template-columns: 1fr 100px;
-      grid-template-rows: auto auto;
-      align-items: center;
-      gap: 0 12px;
-    }
-
+  /* ── Tablet & mobile (<1440): swiper replaces the hover marquee ── */
+  @media (max-width: 1439px) {
+    .work-item,
     .work-item:hover {
       background-color: transparent;
     }
@@ -315,32 +324,74 @@ const mediaStyle = (b: MarqueeBlock) =>
       opacity: 1;
     }
 
+    .work-item__marquee {
+      display: none !important;
+    }
+
+    .work-item__content {
+      height: auto;
+      align-items: center;
+      gap: 40px;
+      padding-block: 40px;
+    }
+
+    .work-item__head {
+      /* fixed share so the swiper starts at the same x across every row */
+      flex: 0 0 45%;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
     .work-item__index {
-      font-size: 20px;
       margin-top: 0;
-      grid-column: 1;
-      grid-row: 1;
+      align-self: flex-start;
     }
 
     .work-item__title {
-      font-size: clamp(48px, 14vw, 60px);
-      line-height: 1;
       margin-top: 0;
-      grid-column: 1;
-      grid-row: 2;
+      font-size: 90px; /* tablet large — estimate, tune to Figma */
+      line-height: 0.9;
     }
 
-    .work-item__thumb {
+    .work-item__arrow {
+      display: inline;
+    }
+
+    .work-item__media {
       display: block;
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      grid-column: 2;
-      grid-row: 1 / 3;
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  /* Font size steps down at 1024 */
+  @media (max-width: 1023px) {
+    .work-item__title {
+      font-size: 70px;
+    }
+  }
+
+  /* <900: swiper drops under the title (900 itself stays side-by-side, per the mock) */
+  @media (max-width: 899px) {
+    .work-item__content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+      padding-block: 24px;
     }
 
-    .work-item__marquee {
-      display: none !important;
+    .work-item__head {
+      flex: none;
+    }
+
+    .work-item__title {
+      font-size: clamp(44px, 13vw, 60px);
+      line-height: 1;
+    }
+
+    .work-item__media {
+      flex: none;
+      width: 100%;
     }
   }
 </style>

@@ -1,0 +1,151 @@
+---
+// Per-project image swiper for the works list on tablet / mobile (replaces the
+// old scroll carousel). Active slide is larger and centered; neighbours sit ~75%
+// UNDER it (heavy overlap), stacked by distance. No arrows; swipe only on touch.
+//
+// embla centers the active slide (full-width slides => reliable centering); the
+// overlap is produced by translating each <img> toward the centre (embla never
+// touches the img, so its loop transform doesn't clobber ours). Multi-instance safe.
+interface Props {
+  images: string[];
+  name: string;
+  loop?: boolean;
+}
+
+const { images, name, loop = true } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (p: string) => (/^https?:\/\//.test(p) ? p : `${base}${p}`);
+const count = images.length;
+---
+
+<div class="pswiper" data-pswiper data-loop={String(loop)}>
+  <div class="pswiper__viewport">
+    <div class="pswiper__container">
+      {images.map((src, i) => (
+        <div
+          class:list={['pswiper__slide', { 'is-active': i === 0 }]}
+          aria-roledescription="slide"
+          aria-label={`${name} — ${i + 1} of ${count}`}
+          aria-current={i === 0 ? 'true' : 'false'}
+          data-pswiper-slide
+        >
+          <img
+            class="pswiper__img"
+            src={withBase(src)}
+            width="493"
+            height="660"
+            alt={`${name} — ${i + 1}`}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  import EmblaCarousel from 'embla-carousel';
+
+  // Swipe only on touchscreens; there are no arrows, so on non-touch it's a static peek.
+  const isTouch = matchMedia('(pointer: coarse)').matches;
+  const SCALE = 280 / 330; // inactive card height (280) relative to active (330)
+
+  document.querySelectorAll<HTMLElement>('[data-pswiper]').forEach((root) => {
+    const viewport = root.querySelector<HTMLElement>('.pswiper__viewport');
+    if (!viewport) return;
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-pswiper-slide]')];
+    const n = slides.length;
+
+    const embla = EmblaCarousel(viewport, {
+      align: 'center',
+      loop: root.dataset.loop === 'true',
+      watchDrag: isTouch,
+    });
+
+    const layout = () => {
+      const i = embla.selectedScrollSnap();
+      const w = slides[i]?.offsetWidth || 0;          // active card width (layout)
+      // Pull a neighbour toward the centre so it sits 75% under the active card:
+      //   neighbour centre target = activeHalf - 0.5*bgHalf;  pull = emblaPitch(=w) - target
+      const pull = w * (0.5 + SCALE / 4);
+      slides.forEach((s, j) => {
+        const active = j === i;
+        let d = j - i;                                 // loop-aware signed distance
+        if (d > n / 2) d -= n;
+        if (d < -n / 2) d += n;
+        const ad = Math.abs(d);
+        s.classList.toggle('is-active', active);
+        s.setAttribute('aria-current', active ? 'true' : 'false');
+        s.style.zIndex = String(100 - ad);             // nearer the centre = on top
+        const img = s.querySelector<HTMLElement>('.pswiper__img');
+        if (!img) return;
+        if (ad <= 1) {
+          // active + the two immediate neighbours: form the centred trio
+          img.style.transform = `translateX(${-d * pull}px) scale(${active ? 1 : SCALE})`;
+          img.style.opacity = active ? '1' : '0.5';
+        } else {
+          // everything else stays hidden — only 3 cards are ever visible
+          img.style.transform = `scale(${SCALE})`;
+          img.style.opacity = '0';
+        }
+      });
+    };
+
+    embla.on('select', layout);
+    embla.on('reInit', layout);
+    layout();
+  });
+</script>
+
+<style>
+  .pswiper {
+    --ps-h-active: 330px; /* active card height (background cards are scaled to 280) */
+    width: 100%;
+  }
+
+  .pswiper__viewport {
+    /* exactly the active card + its two 25%-peeking neighbours; nothing else shows */
+    max-width: 360px;
+    margin-inline: auto;
+    overflow: hidden;
+  }
+
+  .pswiper__container {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Full-width slides => embla centres the active one reliably. The image overflows
+     toward the centre (translated by JS) to overlap its neighbours. */
+  .pswiper__slide {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .pswiper__img {
+    flex: none;
+    display: block;
+    height: var(--ps-h-active);
+    width: auto;
+    aspect-ratio: 493 / 660;
+    object-fit: cover;
+    background-color: var(--color-placeholder);
+    opacity: 0.5;
+    transform: scale(0.848); /* pre-JS fallback; JS sets translateX + scale per slide */
+    transform-origin: center;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pswiper__img {
+      transition: none;
+    }
+  }
+</style>
