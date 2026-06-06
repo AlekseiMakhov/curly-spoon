@@ -9,6 +9,13 @@ interface Props {
 }
 
 const { title = 'Arina Makhova', preloadFonts = [] } = Astro.props;
+
+// Cloudflare Web Analytics beacon. Loads in production builds only, so local
+// `dev` traffic never reaches the dashboard. The token is public by design
+// (it's exposed in the page source); PUBLIC_CF_BEACON_TOKEN can override it.
+const cfBeaconToken =
+  import.meta.env.PUBLIC_CF_BEACON_TOKEN ??
+  (import.meta.env.PROD ? 'c748292355da4fc7ad5af750bc02e0f9' : undefined);
 ---
 
 <!doctype html>
@@ -23,6 +30,14 @@ const { title = 'Arina Makhova', preloadFonts = [] } = Astro.props;
     {preloadFonts.map((href) => (
       <link rel="preload" href={href} as="font" type="font/woff2" crossorigin="anonymous" />
     ))}
+    {cfBeaconToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${cfBeaconToken}"}`}
+      ></script>
+    )}
     <title>{title}</title>
   </head>
   <body>
