@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ContactInfo from '../components/ContactInfo.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 ---
 
 <Layout
@@ -9,16 +9,14 @@ import ContactInfo from '../components/ContactInfo.astro';
 >
   <article class="about">
     <div class="about__texts">
-      <p class="about__text">Working across 3D design, AI, and motion, I create visuals that capture attention and elevate products and brands.</p>
-      <p class="about__text">With a background in graphic design, I gradually shifted my focus toward 3D and motion, drawn by their ability to bring ideas to life through movement, depth, and storytelling. Inspired by the intersection of art and technology, I’m constantly exploring new tools, techniques, and creative possibilities.</p>
-      <p class="about__text">I’m particularly interested in beauty, jewelry, fashion, and consumer technology, creating visual experiences for brands that value strong design and a distinctive identity.</p>
-      <p class="about__text">I’m always open to new collaborations and creative projects. Feel free to get in touch if you’d like to work together or discuss an idea. You can reach me via email or through my social channels.</p>
+      <p class="about__text">I’m a multidisciplinary designer with a background in graphic design, now focused on 3D, AI, and motion.</p>
+      <p class="about__text">I’m fascinated by the intersection of art, design, and emerging technologies, constantly exploring new tools, workflows, and creative possibilities. My work combines the precision and control of 3D with the speed, experimentation, and creative potential of AI.</p>
+      <p class="about__text">I’m particularly drawn to projects that translate products, objects, and ideas into visual experiences, with a focus on beauty, jewelry, fashion, and consumer tech.</p>
+      <p class="about__text">I’m always open to new collaborations and creative projects. Feel free to get in touch if you’d like to collaborate, discuss a project, or connect professionally. You can reach me via email or through my social channels.</p>
     </div>
-
-    <footer class="about__footer">
-      <ContactInfo />
-    </footer>
   </article>
+
+  <SiteFooter />
 </Layout>
 
 <style>
@@ -43,14 +41,6 @@ import ContactInfo from '../components/ContactInfo.astro';
     line-height: 1.4;
   }
 
-  /* Footer — wraps ContactInfo; sets its font size + gap between email and socials */
-  .about__footer {
-    padding-top: 100px;
-    padding-bottom: 70px;
-    font-size: 40px;
-    --ci-gap: 20px;
-  }
-
   /* Tablet (900–1366) */
   @media (max-width: 1366px) {
     .about {
@@ -64,13 +54,6 @@ import ContactInfo from '../components/ContactInfo.astro';
     .about__text {
       font-size: 40px;
     }
-
-    .about__footer {
-      --ci-gap: 10px;
-      font-size: 20px;
-      padding-top: 70px;
-      padding-bottom: 40px;
-    }
   }
 
   /* Mobile (<900) */
@@ -81,10 +64,6 @@ import ContactInfo from '../components/ContactInfo.astro';
 
     .about__text {
       font-size: 30px;
-    }
-
-    .about__footer {
-      padding-bottom: 30px;
     }
   }
 </style>

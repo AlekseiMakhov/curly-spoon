@@ -2,10 +2,10 @@
 export const EMAIL = 'arina.makhova@gmail.com';
 
 export const SOCIALS = [
-  { label: 'IG', name: 'Instagram', href: '#' },
-  { label: 'BE', name: 'Behance', href: '#' },
-  { label: 'FB', name: 'Facebook', href: '#' },
-  { label: 'LI', name: 'LinkedIn', href: '#' },
+  { label: 'IG', name: 'Instagram', href: 'https://www.instagram.com/arinamakhova' },
+  { label: 'BE', name: 'Behance', href: 'https://www.behance.net/Arina_Makhova' },
+  { label: 'FB', name: 'Facebook', href: 'https://www.facebook.com/arina.makhova' },
+  { label: 'LI', name: 'LinkedIn', href: 'https://www.linkedin.com/in/arina-makhova-82b46688' },
 ];
 
 // ── Responsive media (served from R2 in per-width folders) ──

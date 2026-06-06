@@ -89,7 +89,7 @@ const count = images.length;
         const isActive = d === 0;
         s.classList.toggle('is-active', isActive);
         s.setAttribute('aria-current', isActive ? 'true' : 'false');
-        s.style.zIndex = String(100 - ad);
+        s.style.zIndex = String(10 - ad); // stay below the fixed header (z-index 100)
         s.style.opacity = isActive ? '1' : ad === 1 ? '0.5' : '0';
       });
     };
