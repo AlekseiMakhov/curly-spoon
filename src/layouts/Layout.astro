@@ -10,12 +10,10 @@ interface Props {
 
 const { title = 'Arina Makhova', preloadFonts = [] } = Astro.props;
 
-// Cloudflare Web Analytics beacon. Loads in production builds only, so local
-// `dev` traffic never reaches the dashboard. The token is public by design
-// (it's exposed in the page source); PUBLIC_CF_BEACON_TOKEN can override it.
-const cfBeaconToken =
-  import.meta.env.PUBLIC_CF_BEACON_TOKEN ??
-  (import.meta.env.PROD ? 'c748292355da4fc7ad5af750bc02e0f9' : undefined);
+// Cloudflare Web Analytics beacon. The token comes from the PUBLIC_CF_BEACON_TOKEN
+// build env var (set on Cloudflare for the production domain), so local `dev`
+// without it stays untracked and no token lives in the repo.
+const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
 ---
 
 <!doctype html>
