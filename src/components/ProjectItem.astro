@@ -106,7 +106,7 @@ const mediaStyle = (b: MarqueeBlock) =>
 
       // Play ONLY the clip directly under the cursor.
       const videos = [...item.querySelectorAll<HTMLVideoElement>('.project-item__marquee video')];
-      let hovered = false, mx = -1, my = -1, pickTimer = 0;
+      let hovered = false, mx = -1, my = -1, pickTimer = 0, preloaded = false;
       const playUnderCursor = () => {
         if (!hovered) return;
         let target: HTMLVideoElement | null = null;
@@ -122,6 +122,12 @@ const mediaStyle = (b: MarqueeBlock) =>
       item.addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; playUnderCursor(); });
       item.addEventListener('pointerenter', (e) => {
         hovered = true; mx = e.clientX; my = e.clientY;
+        // Start downloading every clip the moment the project is hovered, so they're
+        // ready as the strip scrolls (playback stays single-clip, under the cursor).
+        if (!preloaded) {
+          preloaded = true;
+          videos.forEach((v) => { v.preload = 'auto'; v.load(); });
+        }
         if (!rafId) { x = 0; prev = 0; startedAt = 0; wrap = track.getBoundingClientRect().width; rafId = requestAnimationFrame(frame); }
         pickTimer = window.setInterval(playUnderCursor, 80); // re-check as the strip scrolls under a still cursor
         playUnderCursor();

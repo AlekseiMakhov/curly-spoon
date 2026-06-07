@@ -1,12 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import PlaygroundCarousel from '../components/PlaygroundCarousel.astro';
 import { MEDIA_BASE } from '../consts';
 
 // Playground media lives on R2 next to the project folders, under `playground/`,
-// in numbered folders (001, 002, …) each holding numbered images (1.jpg, 2.jpg, …).
-// The page DISCOVERS them at runtime (no config), so new folders/images can be
-// dropped into the bucket without redeploying the site. See the client script.
+// in numbered folders (001, 002, …) each holding numbered images (01.jpg, 02.jpg, …).
+// The page discovers them at runtime (no config) — drop new folders/images into the
+// bucket and they appear on next load, no redeploy. See the client script below.
 const playgroundBase = `${MEDIA_BASE}/playground`;
 ---
 
@@ -22,164 +23,97 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
   <SiteFooter />
 </Layout>
 
+{/* Registers the <pg-carousel> custom element + its styles (renders no markup) */}
+<PlaygroundCarousel />
+
 <script>
-  // ── Runtime discovery + carousels ──
-  // No build-time config: we probe R2 by the numeric convention
-  //   <base>/<NNN>/<i>.<ext>   (NNN = 001.., i = 1.., ext tried in order)
-  // and stop at the first gap. Drop new folders/images into the bucket and they
-  // appear on next load — no redeploy. Existence is tested with `new Image()`
-  // (cross-origin friendly; doubles as a preload for display).
+  // ── Lazy, row-by-row discovery (virtual scroll) ──
+  // Skeleton cards fill the viewport immediately; each row is then probed + loaded a
+  // full row at a time (its folders in parallel via Promise.allSettled) as the grid
+  // bottom nears the viewport. Folders are sequential, so the first missing one ends
+  // the list (and trims the leftover skeletons). Each card is a <pg-carousel> that
+  // loads its own folder — see PlaygroundCarousel.astro.
+  const PADDING = 300; // px of lookahead for skeleton fill + prefetch
   const grid = document.querySelector<HTMLElement>('[data-pg-grid]');
+
   if (grid) {
     // ?pgbase=… overrides the base (handy for local testing against /media/playground).
     const override = new URLSearchParams(location.search).get('pgbase');
-    const BASE = (override ?? grid.dataset.base ?? '').replace(/\/$/, '');
+    const base = (override ?? grid.dataset.base ?? '').replace(/\/$/, '');
+    const colsNow = () => (window.innerWidth <= 479 ? 1 : window.innerWidth <= 1439 ? 2 : 3);
 
-    const EXTS = ['jpg', 'jpeg', 'png', 'webp'];
-    const MAX_FOLDERS = 200;
-    const MAX_IMAGES = 200;
-    const SWIPE_MIN = 40;
-    const DURATION = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500;
-    const pad = (n: number) => String(n).padStart(3, '0');
+    type Card = HTMLElement & { load(): Promise<boolean> };
 
-    const loadImage = (url: string) =>
-      new Promise<boolean>((res) => {
-        const im = new Image();
-        im.onload = () => res(true);
-        im.onerror = () => res(false);
-        im.src = url;
-      });
+    const sentinel = document.createElement('div');
+    sentinel.className = 'pg-sentinel';
+    grid.appendChild(sentinel);
 
-    // First existing URL for image `i` in folder `f`, trying each extension; else null.
-    const findImage = async (f: number, i: number) => {
-      for (const ext of EXTS) {
-        const url = `${BASE}/${pad(f)}/${i}.${ext}`;
-        if (await loadImage(url)) return url;
+    let nextFolder = 1;
+    let ended = false;
+    let pumping = false;
+    const queue: Card[][] = []; // skeleton rows waiting to be loaded
+
+    const makeCard = (folder: number): Card => {
+      const el = document.createElement('pg-carousel') as Card;
+      el.dataset.folder = String(folder);
+      el.dataset.base = base;
+      grid.insertBefore(el, sentinel);
+      return el;
+    };
+
+    const sentinelNearViewport = () =>
+      sentinel.getBoundingClientRect().top <= window.innerHeight + PADDING;
+
+    // Create skeleton rows synchronously until they fill the viewport (+lookahead).
+    const ensureSkeletons = () => {
+      for (let guard = 0; !ended && guard < 100 && sentinelNearViewport(); guard++) {
+        const cols = colsNow();
+        queue.push(Array.from({ length: cols }, (_, k) => makeCard(nextFolder + k)));
+        nextFolder += cols;
       }
-      return null;
     };
 
-    // Build one carousel element and wire its interactions (only if >1 image).
-    const buildCarousel = (images: string[]) => {
-      const n = images.length;
-      const root = document.createElement('div');
-      root.className = 'pgc';
-
-      const vp = document.createElement('div');
-      vp.className = 'pgc__viewport';
-      images.forEach((src, i) => {
-        const slide = document.createElement('div');
-        slide.className = 'pgc__slide' + (i === 0 ? ' is-active' : '');
-        const img = document.createElement('img');
-        img.className = 'pgc__img';
-        img.src = src;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.draggable = false;
-        slide.appendChild(img);
-        vp.appendChild(slide);
-      });
-      root.appendChild(vp);
-
-      if (n <= 1) return root; // single image: no dots, no interaction
-
-      const dots = document.createElement('div');
-      dots.className = 'pgc__dots';
-      images.forEach((_, i) => {
-        const d = document.createElement('span');
-        d.className = 'pgc__dot' + (i === 0 ? ' is-active' : '');
-        dots.appendChild(d);
-      });
-      root.appendChild(dots);
-
-      const slides = [...root.querySelectorAll<HTMLElement>('.pgc__slide')];
-      const dotEls = [...root.querySelectorAll<HTMLElement>('.pgc__dot')];
-      let active = 0;
-      let animating = false;
-      vp.style.cursor = 'pointer';
-
-      // Advance to the next image: it slides IN FROM THE LEFT while the current
-      // one exits to the right. Looping. Active dot fades across (CSS transition).
-      const go = () => {
-        if (animating) return;
-        const cur = active;
-        const nxt = (active + 1) % n;
-        if (cur === nxt) return;
-        animating = true;
-
-        const c = slides[cur];
-        const x = slides[nxt];
-        x.classList.add('is-entering');
-        x.style.transition = 'none';
-        x.style.transform = 'translateX(-100%)';
-        c.style.transition = 'none';
-        c.style.transform = 'translateX(0)';
-        void root.offsetWidth; // reflow so the start positions take effect
-
-        const tr = `transform ${DURATION}ms cubic-bezier(0.65, 0, 0.35, 1)`;
-        x.style.transition = tr;
-        c.style.transition = tr;
-        x.style.transform = 'translateX(0)';
-        c.style.transform = 'translateX(100%)';
-        dotEls[cur].classList.remove('is-active');
-        dotEls[nxt].classList.add('is-active');
-
-        const done = () => {
-          x.removeEventListener('transitionend', done);
-          c.classList.remove('is-active');
-          c.style.transition = '';
-          c.style.transform = '';
-          x.classList.remove('is-entering');
-          x.classList.add('is-active');
-          x.style.transition = '';
-          x.style.transform = '';
-          active = nxt;
-          animating = false;
-        };
-        if (DURATION === 0) done();
-        else x.addEventListener('transitionend', done);
-      };
-
-      vp.addEventListener('click', go);
-
-      // Swipe (touch) — any horizontal swipe advances, like a click.
-      let sx = 0, sy = 0, tracking = false;
-      vp.addEventListener('touchstart', (e) => {
-        sx = e.touches[0].clientX; sy = e.touches[0].clientY; tracking = true;
-      }, { passive: true });
-      vp.addEventListener('touchend', (e) => {
-        if (!tracking) return;
-        tracking = false;
-        const dx = e.changedTouches[0].clientX - sx;
-        const dy = e.changedTouches[0].clientY - sy;
-        if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) go();
-      }, { passive: true });
-
-      return root;
-    };
-
-    // Walk folders 001.. ; within each, images 1.. — stop at the first gap.
-    // Render each carousel as soon as its folder is fully discovered (progressive).
-    (async () => {
-      for (let f = 1; f <= MAX_FOLDERS; f++) {
-        const first = await findImage(f, 1);
-        if (!first) break; // no folder f -> done
-        const images = [first];
-        for (let i = 2; i <= MAX_IMAGES; i++) {
-          const u = await findImage(f, i);
-          if (!u) break;
-          images.push(u);
+    // Load queued rows in order — each row's folders in parallel; stop at the first gap.
+    const pump = async () => {
+      if (pumping) return;
+      pumping = true;
+      while (queue.length) {
+        const row = queue.shift()!;
+        if (ended) {
+          row.forEach((card) => card.remove());
+          continue;
         }
-        grid.appendChild(buildCarousel(images));
+        const results = await Promise.allSettled(row.map((card) => card.load()));
+        for (let k = 0; k < row.length; k++) {
+          const result = results[k];
+          const exists = result.status === 'fulfilled' && result.value;
+          if (!exists) {
+            ended = true;
+            for (let j = k; j < row.length; j++) row[j].remove();
+            break;
+          }
+        }
       }
-    })();
+      pumping = false;
+      if (ended) {
+        io.disconnect();
+        sentinel.remove();
+      }
+    };
+
+    const tick = () => {
+      if (ended) return;
+      ensureSkeletons();
+      pump();
+    };
+
+    const io = new IntersectionObserver(tick, { rootMargin: `${PADDING}px 0px` });
+    io.observe(sentinel);
+    tick();
   }
 </script>
 
 <style is:global>
-  /* Carousels are created at runtime, so these styles must be global
-     (Astro's scoped styles only apply to build-time elements). */
   .playground {
     padding-top: calc(var(--nav-height) + 6.25rem);
     padding-bottom: 6.25rem;
@@ -196,6 +130,12 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
     gap: var(--grid-gutter);
   }
 
+  /* Full-width zero-height marker: when it nears the viewport, the next row loads */
+  .pg-sentinel {
+    grid-column: 1 / -1;
+    height: 1px;
+  }
+
   @media (max-width: 1439px) {
     .pg-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -209,61 +149,5 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
     .pg-grid {
       grid-template-columns: 1fr;
     }
-  }
-
-  /* One image visible at a time, in a 3/4 frame. */
-  .pgc {
-    width: 100%;
-  }
-
-  .pgc__viewport {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    overflow: hidden;
-    background-color: var(--color-placeholder);
-    touch-action: pan-y; /* page scrolls vertically; horizontal = our swipe */
-  }
-
-  .pgc__slide {
-    position: absolute;
-    inset: 0;
-    display: none;
-    will-change: transform;
-  }
-
-  .pgc__slide.is-active,
-  .pgc__slide.is-entering {
-    display: block;
-  }
-
-  .pgc__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    -webkit-user-drag: none;
-    user-select: none;
-  }
-
-  /* Dots — one per image; active is solid white, others dimmed (fades across). */
-  .pgc__dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 0.875rem;
-  }
-
-  .pgc__dot {
-    width: 0.4375rem;
-    height: 0.4375rem;
-    border-radius: 50%;
-    background-color: var(--color-text);
-    opacity: 0.35;
-    transition: opacity 0.4s;
-  }
-
-  .pgc__dot.is-active {
-    opacity: 1;
   }
 </style>
