@@ -36,9 +36,10 @@
     private dots: HTMLElement[] = [];
 
     connectedCallback() {
-      // Skeleton until load() resolves.
+      // Skeleton until load() resolves. The empty dots row reserves its height so the
+      // card doesn't change height when it hydrates (or between single/multi folders).
       this.classList.add('pgc', 'pgc--skeleton');
-      this.innerHTML = '<div class="pgc__viewport"></div>';
+      this.innerHTML = '<div class="pgc__viewport"></div><div class="pgc__dots"></div>';
     }
 
     /** Probe this folder and render it. Resolves true if it exists, false if absent. */
@@ -81,22 +82,23 @@
 
       this.classList.remove('pgc--skeleton');
       this.replaceChildren(viewport);
-
-      if (images.length > 1) {
-        this.appendChild(this.buildDots(images.length));
-        this.bindControls(viewport, images.length);
-      }
+      this.appendChild(this.buildDots(images.length)); // always present (reserves height)
+      if (images.length > 1) this.bindControls(viewport, images.length);
     }
 
+    // Dots row — populated only for multi-image folders; empty (but space-reserving)
+    // otherwise, so every card is the same height.
     private buildDots(n: number): HTMLElement {
       const dots = document.createElement('div');
       dots.className = 'pgc__dots';
-      this.dots = Array.from({ length: n }, (_, i) => {
-        const dot = document.createElement('span');
-        dot.className = 'pgc__dot' + (i === 0 ? ' is-active' : '');
-        dots.appendChild(dot);
-        return dot;
-      });
+      if (n > 1) {
+        this.dots = Array.from({ length: n }, (_, i) => {
+          const dot = document.createElement('span');
+          dot.className = 'pgc__dot' + (i === 0 ? ' is-active' : '');
+          dots.appendChild(dot);
+          return dot;
+        });
+      }
       return dots;
     }
 
@@ -221,12 +223,19 @@
     display: flex;
     justify-content: center;
     gap: 1.25rem;
-    margin-top: 0.875rem;
+    margin-top: 1.875rem;  /* gap from the card: 30px */
+    min-height: 0.625rem;  /* reserve the dot row even when empty → uniform card height */
+  }
+
+  @media (max-width: 900px) {
+    .pgc__dots {
+      margin-top: 1.25rem; /* 20px on mobile (landscape + portrait) */
+    }
   }
 
   .pgc__dot {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.625rem;
+    height: 0.625rem;
     border-radius: 50%;
     background-color: var(--color-text);
     opacity: 0.35;
