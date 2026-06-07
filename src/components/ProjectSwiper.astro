@@ -12,9 +12,11 @@ interface Props {
   images: string[];
   name: string;
   loop?: boolean;
+  /** Eagerly load the lead (active) image — set on the first, above-the-fold row for LCP. */
+  priority?: boolean;
 }
 
-const { images, name, loop = true } = Astro.props;
+const { images, name, loop = true, priority = false } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const withBase = (p: string) => (/^https?:\/\//.test(p) ? p : `${base}${p}`);
 const count = images.length;
@@ -36,7 +38,8 @@ const count = images.length;
           width="493"
           height="660"
           alt={`${name} — ${i + 1}`}
-          loading="lazy"
+          loading={priority && i === 0 ? 'eager' : 'lazy'}
+          fetchpriority={priority && i === 0 ? 'high' : 'auto'}
           decoding="async"
           draggable={false}
         />

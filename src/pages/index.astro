@@ -11,10 +11,11 @@ const works = [gisou, omut, lancel];
 
 <Layout
   title="Arina Makhova — Works"
+  description="Selected work by Arina Makhova — a multidisciplinary designer blending 3D and AI across beauty, jewelry, fashion, and consumer tech. Featuring projects for Gisou, Omut, and Lancel."
   preloadFonts={['/fonts/Sharphy-SemiBold.woff2', '/fonts/silkamono-regular-webfont.woff2', '/fonts/silkamono-light-webfont.woff2']}
 >
   <section class="works">
-    {works.map((work) => (
+    {works.map((work, i) => (
       <WorkItem
         slug={work.slug}
         index={work.index}
@@ -22,6 +23,7 @@ const works = [gisou, omut, lancel];
         description={work.description}
         marquee={work.marquee}
         swiper={work.swiper}
+        priority={i === 0}
       />
     ))}
   </section>
