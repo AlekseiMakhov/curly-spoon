@@ -1,5 +1,5 @@
 ---
-// One project row on the works list.
+// One project row on the projects list.
 //  - ≥1440px (desktop): hover marquee (the scrolling strip below).
 //  - <1440px (tablet/mobile): no hover — show the title (footer-style, with a "→")
 //    plus a per-project image swiper (ProjectSwiper). <900px stacks it under the title.
@@ -38,37 +38,37 @@ const mediaStyle = (b: MarqueeBlock) =>
   [b.ratio && `aspect-ratio:${b.ratio}`, b.width && `width:${b.width}`].filter(Boolean).join(';');
 ---
 
-<a href={withBase(`/works/${slug}`)} class="work-item">
-  <div class="work-item__content">
-    <div class="work-item__head">
-      <span class="work-item__index">{index}</span>
-      <h2 class="work-item__title">{title}</h2>
+<a href={withBase(`/projects/${slug}`)} class="project-item">
+  <div class="project-item__content">
+    <div class="project-item__head">
+      <span class="project-item__index">{index}</span>
+      <h2 class="project-item__title">{title}</h2>
     </div>
 
     {/* Tablet/mobile swiper — replaces the hover marquee below 1440px */}
-    <div class="work-item__media">
+    <div class="project-item__media">
       <ProjectSwiper images={swiper} name={title} priority={priority} />
-      <span class="work-item__cta">View project <span aria-hidden="true">→</span></span>
+      <span class="project-item__cta">View project <span aria-hidden="true">→</span></span>
     </div>
   </div>
 
-  <div class="work-item__marquee" aria-hidden="true">
-    <div class="work-item__marquee-inner">
+  <div class="project-item__marquee" aria-hidden="true">
+    <div class="project-item__marquee-inner">
       {[0, 1].map(() => (
-        <div class="work-item__marquee-track">
-          <span class="work-item__marquee-name">
-            <span class="work-item__marquee-index">{index}</span>
-            <span class="work-item__marquee-heading">{title}</span>
+        <div class="project-item__marquee-track">
+          <span class="project-item__marquee-name">
+            <span class="project-item__marquee-index">{index}</span>
+            <span class="project-item__marquee-heading">{title}</span>
           </span>
           {marquee.map((block) => (
             block.type === 'video' ? (
-              <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} loop muted playsinline preload="none"></video>
+              <video class="project-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} loop muted playsinline preload="none"></video>
             ) : block.type === 'text' ? (
-              <p class="work-item__marquee-desc">{block.value ?? tagline}</p>
+              <p class="project-item__marquee-desc">{block.value ?? tagline}</p>
             ) : block.type === 'placeholder' ? (
-              <div class="work-item__marquee-media work-item__marquee-media--skeleton" style={mediaStyle(block)} aria-hidden="true"></div>
+              <div class="project-item__marquee-media project-item__marquee-media--skeleton" style={mediaStyle(block)} aria-hidden="true"></div>
             ) : (
-              <img class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} alt="" loading="lazy" />
+              <img class="project-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} alt="" loading="lazy" />
             )
           ))}
         </div>
@@ -86,10 +86,10 @@ const mediaStyle = (b: MarqueeBlock) =>
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (!reduceMotion && matchMedia('(min-width: 1440px)').matches) {
-    document.querySelectorAll<HTMLElement>('.work-item').forEach((item) => {
-      const marquee = item.querySelector<HTMLElement>('.work-item__marquee');
-      const inner = item.querySelector<HTMLElement>('.work-item__marquee-inner');
-      const track = item.querySelector('.work-item__marquee-track');
+    document.querySelectorAll<HTMLElement>('.project-item').forEach((item) => {
+      const marquee = item.querySelector<HTMLElement>('.project-item__marquee');
+      const inner = item.querySelector<HTMLElement>('.project-item__marquee-inner');
+      const track = item.querySelector('.project-item__marquee-track');
       if (!marquee || !inner || !track) return;
 
       // Scroll the strip (rAF; constant px/sec; wrap at one track-width = seamless).
@@ -105,7 +105,7 @@ const mediaStyle = (b: MarqueeBlock) =>
       };
 
       // Play ONLY the clip directly under the cursor.
-      const videos = [...item.querySelectorAll<HTMLVideoElement>('.work-item__marquee video')];
+      const videos = [...item.querySelectorAll<HTMLVideoElement>('.project-item__marquee video')];
       let hovered = false, mx = -1, my = -1, pickTimer = 0;
       const playUnderCursor = () => {
         if (!hovered) return;
@@ -138,7 +138,7 @@ const mediaStyle = (b: MarqueeBlock) =>
 </script>
 
 <style>
-  .work-item {
+  .project-item {
     display: block;
     position: relative;
     overflow: hidden;
@@ -149,12 +149,12 @@ const mediaStyle = (b: MarqueeBlock) =>
   }
 
   /* Desktop hover: keep the main dark background, the marquee shows white text/media */
-  .work-item:hover {
+  .project-item:hover {
     background-color: var(--color-bg);
   }
 
   /* Static index + title aligned to the grid; the marquee stays full-bleed. */
-  .work-item__content {
+  .project-item__content {
     max-width: var(--grid-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
@@ -164,14 +164,14 @@ const mediaStyle = (b: MarqueeBlock) =>
     gap: 20px;
   }
 
-  .work-item__head {
+  .project-item__head {
     display: flex;
     align-items: flex-start;
     gap: 20px;
     min-width: 0;
   }
 
-  .work-item__index {
+  .project-item__index {
     font-family: var(--font-mono);
     font-weight: 300;
     font-size: 20px;
@@ -180,7 +180,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     transition: opacity 0.15s;
   }
 
-  .work-item__title {
+  .project-item__title {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 250px;
@@ -192,7 +192,7 @@ const mediaStyle = (b: MarqueeBlock) =>
 
   /* "view project →" caption under the swiper (lives in the media slot, so it's
      hidden on desktop with it and shown below 1440). */
-  .work-item__cta {
+  .project-item__cta {
     display: block;
     margin-top: 30px;
     text-align: center;
@@ -202,18 +202,18 @@ const mediaStyle = (b: MarqueeBlock) =>
     line-height: 1.5;
   }
 
-  .work-item:hover .work-item__index,
-  .work-item:hover .work-item__title {
+  .project-item:hover .project-item__index,
+  .project-item:hover .project-item__title {
     opacity: 0;
   }
 
   /* Swiper slot — hidden on desktop (the marquee handles hover there) */
-  .work-item__media {
+  .project-item__media {
     display: none;
   }
 
   /* Marquee overlay */
-  .work-item__marquee {
+  .project-item__marquee {
     position: absolute;
     inset: 0;
     padding-block: 18px;
@@ -223,17 +223,17 @@ const mediaStyle = (b: MarqueeBlock) =>
     container-type: inline-size; /* 100cqw = row width (no scrollbar), matches the .container math */
   }
 
-  .work-item:hover .work-item__marquee {
+  .project-item:hover .project-item__marquee {
     display: block;
   }
 
   /* Two identical tracks side by side, scrolling in lockstep for a seamless loop */
-  .work-item__marquee-inner {
+  .project-item__marquee-inner {
     display: flex;
     height: 100%;
   }
 
-  .work-item__marquee-track {
+  .project-item__marquee-track {
     display: flex;
     flex-shrink: 0;
     align-items: center;
@@ -246,27 +246,27 @@ const mediaStyle = (b: MarqueeBlock) =>
   }
 
   /* Promote the moving strip while hovered so its per-frame transform composites on the GPU. */
-  .work-item:hover .work-item__marquee-inner {
+  .project-item:hover .project-item__marquee-inner {
     will-change: transform;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .work-item__marquee-media--skeleton {
+    .project-item__marquee-media--skeleton {
       animation: none;
     }
   }
 
-  /* Number + name pair — same offsets as the static .work-item__content */
-  .work-item__marquee-name {
+  /* Number + name pair — same offsets as the static .project-item__content */
+  .project-item__marquee-name {
     display: flex;
     align-items: flex-start;
     gap: 20px;
     flex-shrink: 0;
     align-self: flex-start;
-    margin-top: -18px; /* cancel .work-item__marquee padding-block so offsets are from the row top */
+    margin-top: -18px; /* cancel .project-item__marquee padding-block so offsets are from the row top */
   }
 
-  .work-item__marquee-index {
+  .project-item__marquee-index {
     font-family: var(--font-mono);
     font-weight: 300;
     font-size: 20px;
@@ -276,7 +276,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     flex-shrink: 0;
   }
 
-  .work-item__marquee-heading {
+  .project-item__marquee-heading {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 250px;
@@ -288,7 +288,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     text-transform: lowercase;
   }
 
-  .work-item__marquee-media {
+  .project-item__marquee-media {
     display: block;
     height: 100%;
     aspect-ratio: 3 / 4;
@@ -298,7 +298,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     background-color: var(--color-placeholder);
   }
 
-  .work-item__marquee-media--skeleton {
+  .project-item__marquee-media--skeleton {
     background-image: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.07) 50%, transparent 60%);
     background-repeat: no-repeat;
     background-size: 200% 100%;
@@ -310,7 +310,7 @@ const mediaStyle = (b: MarqueeBlock) =>
     to   { background-position: -150% 0; }
   }
 
-  .work-item__marquee-desc {
+  .project-item__marquee-desc {
     font-family: var(--font-mono);
     font-size: 18px;
     line-height: 1.5;
@@ -322,28 +322,28 @@ const mediaStyle = (b: MarqueeBlock) =>
 
   /* ── Tablet & mobile (<1440): swiper replaces the hover marquee ── */
   @media (max-width: 1439px) {
-    .work-item,
-    .work-item:hover {
+    .project-item,
+    .project-item:hover {
       background-color: transparent;
     }
 
-    .work-item:hover .work-item__index,
-    .work-item:hover .work-item__title {
+    .project-item:hover .project-item__index,
+    .project-item:hover .project-item__title {
       opacity: 1;
     }
 
-    .work-item__marquee {
+    .project-item__marquee {
       display: none !important;
     }
 
-    .work-item__content {
+    .project-item__content {
       height: auto;
       align-items: flex-start; /* title pinned to the top of the row, not centred */
       gap: 40px;
       padding-block: 40px;
     }
 
-    .work-item__head {
+    .project-item__head {
       /* fixed share so the swiper starts at the same x across every row */
       flex: 0 0 45%;
       align-items: flex-start;
@@ -351,7 +351,7 @@ const mediaStyle = (b: MarqueeBlock) =>
       --wi-title: 90px; /* title size per breakpoint; also drives the index's top offset */
     }
 
-    .work-item__index {
+    .project-item__index {
       /* push the number down so its top edge meets the title's text top */
       margin-top: calc(var(--wi-title) * 0.26);
       align-self: flex-start;
@@ -359,13 +359,13 @@ const mediaStyle = (b: MarqueeBlock) =>
       font-size: 14px;
     }
 
-    .work-item__title {
+    .project-item__title {
       margin-top: 0;
       font-size: var(--wi-title);
       line-height: 0.9;
     }
 
-    .work-item__media {
+    .project-item__media {
       display: block;
       flex: 1 1 0;
       min-width: 0;
@@ -374,30 +374,30 @@ const mediaStyle = (b: MarqueeBlock) =>
 
   /* Font size steps down at 1024 */
   @media (max-width: 1023px) {
-    .work-item__head {
+    .project-item__head {
       --wi-title: 70px;
     }
   }
 
   /* <900: swiper drops under the title (900 itself stays side-by-side, per the mock) */
   @media (max-width: 899px) {
-    .work-item__content {
+    .project-item__content {
       flex-direction: column;
       align-items: stretch;
       gap: 20px;
       padding-block: 30px;
     }
 
-    .work-item__head {
+    .project-item__head {
       flex: none;
       --wi-title: clamp(44px, 13vw, 60px);
     }
 
-    .work-item__title {
+    .project-item__title {
       line-height: 1;
     }
 
-    .work-item__media {
+    .project-item__media {
       flex: none;
       width: 100%;
     }

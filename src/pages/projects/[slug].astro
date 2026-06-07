@@ -3,9 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import ProjectGallery from '../../components/ProjectGallery.astro';
 import ProjectHeader from '../../components/ProjectHeader.astro';
 import ProjectFooter from '../../components/ProjectFooter.astro';
-import gisou from '../../content/works/gisou.json';
-import omut from '../../content/works/omut.json';
-import lancel from '../../content/works/lancel.json';
+import gisou from '../../content/projects/gisou.json';
+import omut from '../../content/projects/omut.json';
+import lancel from '../../content/projects/lancel.json';
 // balmain is kept in content but hidden for now (not enough material yet)
 
 export function getStaticPaths() {
@@ -17,27 +17,27 @@ export function getStaticPaths() {
 }
 
 // Galleries differ in shape per project (R2 vs legacy), so keep this loose.
-const worksMap: Record<string, any> = { gisou, omut, lancel };
+const projectsMap: Record<string, any> = { gisou, omut, lancel };
 const { slug } = Astro.params;
-const work = worksMap[slug];
-const nextWork = worksMap[work.next];
+const project = projectsMap[slug];
+const nextProject = projectsMap[project.next];
 ---
 
 <Layout
-  title={`${work.title} — Arina Makhova`}
-  description={work.description}
-  ogImage={work.cover}
+  title={`${project.title} — Arina Makhova`}
+  description={project.description}
+  ogImage={project.cover}
   ogType="article"
   preloadFonts={['/fonts/Sharphy-SemiBold.woff2', '/fonts/silkamono-regular-webfont.woff2']}
 >
   <article class="project">
-    <ProjectHeader index={work.index} title={work.title} description={work.description} />
+    <ProjectHeader index={project.index} title={project.title} description={project.description} />
 
     <div class="project__gallery">
-      <ProjectGallery slug={slug} items={work.gallery} />
+      <ProjectGallery slug={slug} items={project.gallery} />
     </div>
 
-    <ProjectFooter nextSlug={nextWork.slug} nextTitle={nextWork.title} />
+    <ProjectFooter nextSlug={nextProject.slug} nextTitle={nextProject.title} />
   </article>
 </Layout>
 
