@@ -31,7 +31,7 @@ interface Props {
 const { slug, index, title, description, marquee, swiper, priority = false } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const withBase = (path: string) => `${base}${path}`;
-const tagline = description.split('. ')[0] + '.';
+const tagline = description.split('. ')[0].replace(/\.+$/, '') + '.';
 
 // Optional per-block sizing -> inline style; empty string when the block sizes naturally.
 const mediaStyle = (b: MarqueeBlock) =>

@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import ProjectHeader from '../components/ProjectHeader.astro';
 import PlaygroundCarousel from '../components/PlaygroundCarousel.astro';
 import { MEDIA_BASE } from '../consts';
 
@@ -9,13 +10,22 @@ import { MEDIA_BASE } from '../consts';
 // The page discovers them at runtime (no config) — drop new folders/images into the
 // bucket and they appear on next load, no redeploy. See the client script below.
 const playgroundBase = `${MEDIA_BASE}/playground`;
+
+const description =
+  'A collection of personal experiments exploring materials, textures, light, and form through 3D and AI-driven workflows.';
+// Soft hyphen: the title breaks as "play-/ground" only when it doesn't fit (portrait).
+const title = 'Play­ground';
 ---
 
 <Layout
   title="Playground — Arina Makhova"
-  description="A space for experiments and works in progress by Arina Makhova."
-  preloadFonts={['/fonts/Sharphy-Regular.woff2', '/fonts/silkamono-regular-webfont.woff2']}
+  description={description}
+  preloadFonts={['/fonts/Sharphy-SemiBold.woff2', '/fonts/silkamono-regular-webfont.woff2']}
 >
+  <div class="pg-intro">
+    <ProjectHeader title={title} description={description} />
+  </div>
+
   <section class="playground">
     <div class="pg-grid" data-pg-grid data-base={playgroundBase}></div>
   </section>
@@ -114,10 +124,9 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
 </script>
 
 <style is:global>
-  .playground {
-    padding-top: calc(var(--nav-height) + 6.25rem);
-    padding-bottom: 6.25rem;
-    min-height: 60vh;
+  /* Clears the fixed nav; the header below adds its own top gap (like project pages). */
+  .pg-intro {
+    padding-top: var(--nav-height);
   }
 
   /* 3 per row (desktop) / 2 (tablet + landscape mobile) / 1 (portrait mobile) */
@@ -140,8 +149,12 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
     .pg-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    .playground {
-      padding-top: calc(var(--nav-height) + 3.125rem);
+  }
+
+  /* Mobile: bigger gap between carousels */
+  @media (max-width: 900px) {
+    .pg-grid {
+      gap: 1.875rem; /* 30px */
     }
   }
 

@@ -1,6 +1,6 @@
 ---
 interface Props {
-  index: string;
+  index?: string;
   title: string;
   description: string;
 }
@@ -8,9 +8,9 @@ interface Props {
 const { index, title, description } = Astro.props;
 ---
 
-<header class="project__header">
+<header class:list={['project__header', { 'project__header--plain': !index }]}>
   <div class="project__head">
-    <span class="project__index">{index}</span>
+    {index && <span class="project__index">{index}</span>}
     <h1 class="project__title">{title}</h1>
   </div>
   <p class="project__desc">{description}</p>
@@ -102,6 +102,12 @@ const { index, title, description } = Astro.props;
     .project__desc {
       margin-top: 1.25rem;
     }
+  }
+
+  /* No index (e.g. Playground): drop the hanging-index offset at every breakpoint */
+  .project__header--plain .project__head,
+  .project__header--plain .project__desc {
+    padding-left: 0;
   }
 
   /* ≤1023 — Figma 874/402: title 70, content full-width */
