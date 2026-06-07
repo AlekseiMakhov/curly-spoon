@@ -24,9 +24,11 @@ interface Props {
   description: string;
   marquee: MarqueeBlock[];
   swiper: string[];
+  /** First row above the fold — eagerly load its lead swiper image for a faster LCP. */
+  priority?: boolean;
 }
 
-const { slug, index, title, description, marquee, swiper } = Astro.props;
+const { slug, index, title, description, marquee, swiper, priority = false } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const withBase = (path: string) => `${base}${path}`;
 const tagline = description.split('. ')[0] + '.';
@@ -45,7 +47,7 @@ const mediaStyle = (b: MarqueeBlock) =>
 
     {/* Tablet/mobile swiper — replaces the hover marquee below 1440px */}
     <div class="work-item__media">
-      <ProjectSwiper images={swiper} name={title} />
+      <ProjectSwiper images={swiper} name={title} priority={priority} />
       <span class="work-item__cta">View project <span aria-hidden="true">→</span></span>
     </div>
   </div>
@@ -60,13 +62,13 @@ const mediaStyle = (b: MarqueeBlock) =>
           </span>
           {marquee.map((block) => (
             block.type === 'video' ? (
-              <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} loop muted playsinline preload="auto"></video>
+              <video class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} loop muted playsinline preload="none"></video>
             ) : block.type === 'text' ? (
               <p class="work-item__marquee-desc">{block.value ?? tagline}</p>
             ) : block.type === 'placeholder' ? (
               <div class="work-item__marquee-media work-item__marquee-media--skeleton" style={mediaStyle(block)} aria-hidden="true"></div>
             ) : (
-              <img class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} alt="" loading="eager" />
+              <img class="work-item__marquee-media" src={withBase(block.src!)} style={mediaStyle(block)} alt="" loading="lazy" />
             )
           ))}
         </div>

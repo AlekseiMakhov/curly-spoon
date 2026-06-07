@@ -6,28 +6,78 @@
   "description": "Inspired by Omut’s jewelry collections, this series explores the interplay of ice and metal, translating the brand’s bold aesthetic into sculptural forms, sharp details, and reflective surfaces.",
   "cover": "/media/omut/01.jpg",
   "marquee": [
-    { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-01.mp4", "ratio": "498 / 280" },
-    { "type": "text" },
-    { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-02.mp4" },
-    { "type": "image", "src": "/media/omut/preview/OMUT-PREVIEW-03.jpg" },
-    { "type": "image", "src": "/media/omut/preview/OMUT-PREVIEW-04.jpg" },
-    { "type": "video", "src": "/media/omut/preview/OMUT-PREVIEW-05.mp4" }
+    {
+      "type": "video",
+      "src": "/media/omut/preview/OMUT-PREVIEW-01.mp4",
+      "ratio": "498 / 280"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "video",
+      "src": "/media/omut/preview/OMUT-PREVIEW-02.mp4"
+    },
+    {
+      "type": "image",
+      "src": "/media/omut/preview/OMUT-PREVIEW-03.jpg"
+    },
+    {
+      "type": "image",
+      "src": "/media/omut/preview/OMUT-PREVIEW-04.jpg"
+    },
+    {
+      "type": "video",
+      "src": "/media/omut/preview/OMUT-PREVIEW-05.mp4"
+    }
   ],
   "swiper": [
-    "/media/omut/swiper/OMUT-MOBILE-01.jpg",
-    "/media/omut/swiper/OMUT-MOBILE-02.jpg",
-    "/media/omut/swiper/OMUT-MOBILE-03.jpg",
-    "/media/omut/swiper/OMUT-MOBILE-04.jpg",
-    "/media/omut/swiper/OMUT-MOBILE-05.jpg"
+    "/media/omut/swiper/OMUT-MOBILE-01.webp",
+    "/media/omut/swiper/OMUT-MOBILE-02.webp",
+    "/media/omut/swiper/OMUT-MOBILE-03.webp",
+    "/media/omut/swiper/OMUT-MOBILE-04.webp",
+    "/media/omut/swiper/OMUT-MOBILE-05.webp"
   ],
   "gallery": [
-    { "type": "video", "file": "OMUT-01.mp4", "ratio": "16/9" },
-    { "type": "image", "file": "OMUT-02.jpg", "ratio": "3/4" },
-    { "type": "video", "file": "OMUT-03.mp4", "ratio": "3/4" },
-    { "type": "image", "file": "OMUT-04.jpg", "ratio": "3/4" },
-    { "type": "video", "file": "OMUT-05.mp4", "ratio": "3/4" },
-    { "type": "video", "file": "OMUT-06.mp4", "ratio": "16/9" },
-    { "type": "image", "file": "OMUT-07.jpg", "ratio": "3/4" },
-    { "type": "image", "file": "OMUT-08.jpg", "ratio": "3/4" }
+    {
+      "type": "video",
+      "file": "OMUT-01.mp4",
+      "ratio": "16/9"
+    },
+    {
+      "type": "image",
+      "file": "OMUT-02.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "OMUT-03.mp4",
+      "ratio": "3/4"
+    },
+    {
+      "type": "image",
+      "file": "OMUT-04.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "OMUT-05.mp4",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "OMUT-06.mp4",
+      "ratio": "16/9"
+    },
+    {
+      "type": "image",
+      "file": "OMUT-07.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "image",
+      "file": "OMUT-08.jpg",
+      "ratio": "3/4"
+    }
   ]
 }

@@ -6,32 +6,98 @@
   "description": "Independent visuals and motion inspired by Gisou’s honey-based beauty line, capturing the richness, fluidity, and glow that define the brand’s distinctive aesthetic.",
   "cover": "/media/gisou/01.jpg",
   "marquee": [
-    { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-01.mp4" },
-    { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-02.mp4" },
-    { "type": "text" },
-    { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-03.mp4", "ratio": "498 / 280" },
-    { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-04.mp4" },
-    { "type": "video", "src": "/media/gisou/preview/GISOU-PREVIEW-05.mp4" }
+    {
+      "type": "video",
+      "src": "/media/gisou/preview/GISOU-PREVIEW-01.mp4"
+    },
+    {
+      "type": "video",
+      "src": "/media/gisou/preview/GISOU-PREVIEW-02.mp4"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "video",
+      "src": "/media/gisou/preview/GISOU-PREVIEW-03.mp4",
+      "ratio": "498 / 280"
+    },
+    {
+      "type": "video",
+      "src": "/media/gisou/preview/GISOU-PREVIEW-04.mp4"
+    },
+    {
+      "type": "video",
+      "src": "/media/gisou/preview/GISOU-PREVIEW-05.mp4"
+    }
   ],
   "swiper": [
-    "/media/gisou/swiper/GISOU-MOBILE-01.jpg",
-    "/media/gisou/swiper/GISOU-MOBILE-02.jpg",
-    "/media/gisou/swiper/GISOU-MOBILE-03.jpg",
-    "/media/gisou/swiper/GISOU-MOBILE-04.jpg",
-    "/media/gisou/swiper/GISOU-MOBILE-05.jpg"
+    "/media/gisou/swiper/GISOU-MOBILE-01.webp",
+    "/media/gisou/swiper/GISOU-MOBILE-02.webp",
+    "/media/gisou/swiper/GISOU-MOBILE-03.webp",
+    "/media/gisou/swiper/GISOU-MOBILE-04.webp",
+    "/media/gisou/swiper/GISOU-MOBILE-05.webp"
   ],
   "gallery": [
-    { "type": "image", "file": "GISOU-01.jpg", "ratio": "16/9" },
-    { "type": "video", "file": "GISOU-02.mp4", "ratio": "3/4" },
-    { "type": "video", "file": "GISOU-03.mp4", "ratio": "3/4" },
-    { "type": "video", "file": "GISOU-04.mp4", "ratio": "9/16" },
-    { "type": "video", "file": "GISOU-05.mp4", "ratio": "9/16" },
-    { "type": "video", "file": "GISOU-06.mp4", "ratio": "9/16" },
-    { "type": "video", "file": "GISOU-07.mp4", "ratio": "16/9" },
-    { "type": "image", "file": "GISOU-08.jpg", "ratio": "3/4" },
-    { "type": "video", "file": "GISOU-09.mp4", "ratio": "3/4" },
-    { "type": "image", "file": "GISOU-10.jpg", "ratio": "16/9" },
-    { "type": "video", "file": "GISOU-11.mp4", "ratio": "3/4" },
-    { "type": "video", "file": "GISOU-12.mp4", "ratio": "3/4" }
+    {
+      "type": "image",
+      "file": "GISOU-01.jpg",
+      "ratio": "16/9"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-02.mp4",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-03.mp4",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-04.mp4",
+      "ratio": "9/16"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-05.mp4",
+      "ratio": "9/16"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-06.mp4",
+      "ratio": "9/16"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-07.mp4",
+      "ratio": "16/9"
+    },
+    {
+      "type": "image",
+      "file": "GISOU-08.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-09.mp4",
+      "ratio": "3/4"
+    },
+    {
+      "type": "image",
+      "file": "GISOU-10.jpg",
+      "ratio": "16/9"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-11.mp4",
+      "ratio": "3/4"
+    },
+    {
+      "type": "video",
+      "file": "GISOU-12.mp4",
+      "ratio": "3/4"
+    }
   ]
 }

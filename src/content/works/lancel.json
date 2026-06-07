@@ -4,28 +4,71 @@
   "title": "LANCEL",
   "next": "gisou",
   "description": "A visual exploration of liquid richness, gloss, and high-end materiality. Built through a hybrid 3D + AI workflow. Pushing beyond traditional rendering to achieve heightened realism and controlled abstraction.",
-  "cover": "/media/lancel/cover.jpg",
+  "cover": "/media/lancel/preview/LANCEL-PREVIEW-03.jpg",
   "marquee": [
-    { "type": "image", "src": "/media/lancel/preview/LANCEL-PREVIEW-01.jpg" },
-    { "type": "image", "src": "/media/lancel/preview/LANCEL-PREVIEW-02.jpg" },
-    { "type": "text" },
-    { "type": "image", "src": "/media/lancel/preview/LANCEL-PREVIEW-03.jpg", "ratio": "996 / 560" },
-    { "type": "image", "src": "/media/lancel/preview/LANCEL-PREVIEW-04.jpg" },
-    { "type": "image", "src": "/media/lancel/preview/LANCEL-PREVIEW-05.jpg", "ratio": "996 / 560" }
+    {
+      "type": "image",
+      "src": "/media/lancel/preview/LANCEL-PREVIEW-01.jpg"
+    },
+    {
+      "type": "image",
+      "src": "/media/lancel/preview/LANCEL-PREVIEW-02.jpg"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "image",
+      "src": "/media/lancel/preview/LANCEL-PREVIEW-03.jpg",
+      "ratio": "996 / 560"
+    },
+    {
+      "type": "image",
+      "src": "/media/lancel/preview/LANCEL-PREVIEW-04.jpg"
+    },
+    {
+      "type": "image",
+      "src": "/media/lancel/preview/LANCEL-PREVIEW-05.jpg",
+      "ratio": "996 / 560"
+    }
   ],
   "swiper": [
-    "/media/lancel/swiper/LANCEL-MOBILE-01.jpg",
-    "/media/lancel/swiper/LANCEL-MOBILE-02.jpg",
-    "/media/lancel/swiper/LANCEL-MOBILE-03.jpg",
-    "/media/lancel/swiper/LANCEL-MOBILE-04.jpg",
-    "/media/lancel/swiper/LANCEL-MOBILE-05.jpg"
+    "/media/lancel/swiper/LANCEL-MOBILE-01.webp",
+    "/media/lancel/swiper/LANCEL-MOBILE-02.webp",
+    "/media/lancel/swiper/LANCEL-MOBILE-03.webp",
+    "/media/lancel/swiper/LANCEL-MOBILE-04.webp",
+    "/media/lancel/swiper/LANCEL-MOBILE-05.webp"
   ],
   "gallery": [
-    { "type": "image", "file": "LANCEL-01.jpg", "ratio": "16/9" },
-    { "type": "image", "file": "LANCEL-02.jpg", "ratio": "3/4" },
-    { "type": "image", "file": "LANCEL-03.jpg", "ratio": "3/4" },
-    { "type": "image", "file": "LANCEL-04.jpg", "ratio": "16/9" },
-    { "type": "image", "file": "LANCEL-05.jpg", "ratio": "3/4" },
-    { "type": "image", "file": "LANCEL-06.jpg", "ratio": "3/4" }
+    {
+      "type": "image",
+      "file": "LANCEL-01.jpg",
+      "ratio": "16/9"
+    },
+    {
+      "type": "image",
+      "file": "LANCEL-02.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "image",
+      "file": "LANCEL-03.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "image",
+      "file": "LANCEL-04.jpg",
+      "ratio": "16/9"
+    },
+    {
+      "type": "image",
+      "file": "LANCEL-05.jpg",
+      "ratio": "3/4"
+    },
+    {
+      "type": "image",
+      "file": "LANCEL-06.jpg",
+      "ratio": "3/4"
+    }
   ]
 }

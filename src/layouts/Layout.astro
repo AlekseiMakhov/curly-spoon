@@ -4,11 +4,32 @@ import Nav from '../components/Nav.astro';
 
 interface Props {
   title?: string;
+  /** Page meta description (also used for OG/Twitter). */
+  description?: string;
+  /** Share image — a path resolved against the site, or an absolute URL. */
+  ogImage?: string;
+  /** OG object type: pages = website, project pages = article. */
+  ogType?: 'website' | 'article';
+  /** Keep the page out of search results (e.g. the empty Playground). */
+  noindex?: boolean;
   /** woff2 paths to preload — the fonts visible above the fold on this page */
   preloadFonts?: string[];
 }
 
-const { title = 'Arina Makhova', preloadFonts = [] } = Astro.props;
+const {
+  title = 'Arina Makhova',
+  description = 'Portfolio of Arina Makhova — a multidisciplinary designer working across 3D, AI, and motion, with a focus on beauty, jewelry, fashion, and consumer tech.',
+  ogImage = '/og-default.png',
+  ogType = 'website',
+  noindex = false,
+  preloadFonts = [],
+} = Astro.props;
+
+// Absolute URLs for canonical + social tags. `Astro.site` comes from astro.config.
+const site = Astro.site ?? new URL('https://arinamakhova.com');
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImageUrl = new URL(ogImage, site).href;
+const isDefaultOg = ogImage === '/og-default.png';
 
 // Cloudflare Web Analytics beacon. The token comes from the PUBLIC_CF_BEACON_TOKEN
 // build env var (set on Cloudflare for the production domain), so local `dev`
@@ -21,7 +42,26 @@ const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Arina Makhova — Portfolio" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonical} />
+
+    {/* Open Graph */}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="Arina Makhova" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    {isDefaultOg && <meta property="og:image:width" content="1200" />}
+    {isDefaultOg && <meta property="og:image:height" content="630" />}
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
