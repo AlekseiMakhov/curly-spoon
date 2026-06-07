@@ -94,7 +94,7 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
     grid-column: 1;
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -109,7 +109,7 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
     position: relative;
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -122,7 +122,7 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
     justify-self: start;
     display: flex;
     align-items: center;
-    gap: 100px;
+    gap: 6.25rem;
   }
 
   .nav__link--about {
@@ -152,11 +152,11 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
     grid-column: 6;
     justify-self: end;
     display: none;
-    width: 30px;
-    height: 30px;
+    width: 1.875rem;
+    height: 1.875rem;
     flex-direction: column;
     justify-content: center;
-    gap: 6px;
+    gap: 0.375rem;
     background: none;
     border: none;
     cursor: pointer;
@@ -179,7 +179,7 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
     z-index: 200;
     flex-direction: column;
     justify-content: space-between;
-    padding: 70px 20px 20px;
+    padding: 4.375rem 1.25rem 1.25rem;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
@@ -193,10 +193,10 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
   /* Close icon — 30×30 X */
   .nav__mobile-close {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 30px;
-    height: 30px;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 1.875rem;
+    height: 1.875rem;
     background: none;
     border: none;
     cursor: pointer;
@@ -207,7 +207,7 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 30px;
+    width: 1.875rem;
     height: 2px;
     background-color: var(--color-text);
   }
@@ -224,25 +224,25 @@ const isPlayground = currentPath.startsWith(`${base}/playground`);
   .nav__mobile-nav {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625rem;
   }
 
   .nav__mobile-link {
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
   }
 
   /* Bottom contact block — sets the font size; ContactInfo handles the rest */
   .nav__mobile-contact {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   /* Tablet — tighter gap between Projects and Playground */
   @media (max-width: 1439px) {
     .nav__links-left {
-      gap: 70px;
+      gap: 4.375rem;
     }
   }
 

@@ -52,13 +52,13 @@
   --font-display: 'Sharphy', sans-serif;
   --font-mono: 'Silka Mono', monospace;
 
-  --nav-height: 90px;
+  --nav-height: 5.625rem;
 
   /* Layout grid */
   --grid-columns: 12;
-  --grid-gutter: 40px;
-  --grid-margin: 40px;   /* minimum side margin */
-  --grid-max: 1920px;    /* design frame; beyond this, side margins grow automatically */
+  --grid-gutter: 2.5rem;
+  --grid-margin: 2.5rem;   /* minimum side margin */
+  --grid-max: 120rem;    /* design frame; beyond this, side margins grow automatically */
 
   --page-padding: var(--grid-margin);
   --gap-gallery: var(--grid-gutter);
@@ -69,8 +69,8 @@
 /* Tablet — 900–1439px: same 12-col grid, tighter gutter/margin. */
 @media (max-width: 1439px) {
   :root {
-    --grid-gutter: 30px;
-    --grid-margin: 30px;
+    --grid-gutter: 1.875rem;
+    --grid-margin: 1.875rem;
   }
 }
 
@@ -78,9 +78,9 @@
 @media (max-width: 900px) {
   :root {
     --grid-columns: 6;
-    --grid-gutter: 20px;
-    --grid-margin: 20px;
-    --nav-height: 70px;
+    --grid-gutter: 1.25rem;
+    --grid-margin: 1.25rem;
+    --nav-height: 4.375rem;
   }
 }
 
@@ -97,6 +97,11 @@
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+  /* Don't let iOS Safari inflate text on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* No grey flash when tapping links / swipers / the playground carousel */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {

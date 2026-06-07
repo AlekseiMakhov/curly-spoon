@@ -5,15 +5,15 @@ import SiteFooter from '../components/SiteFooter.astro';
 
 <Layout
   title="About — Arina Makhova"
-  description="Arina Makhova is a multidisciplinary designer with a background in graphic design, now focused on 3D, AI, and motion — exploring the intersection of art, design, and emerging technologies."
+  description="Arina Makhova — a multidisciplinary designer working with hybrid CGI and AI pipelines, translating products into visual narratives for beauty, jewelry, fashion, and consumer tech."
   preloadFonts={['/fonts/Sharphy-Regular.woff2', '/fonts/silkamono-regular-webfont.woff2']}
 >
   <article class="about">
     <div class="about__texts">
-      <p class="about__text">I’m a multidisciplinary designer with a background in graphic design, now focused on 3D, AI, and motion.</p>
-      <p class="about__text">I’m fascinated by the intersection of art, design, and emerging technologies, constantly exploring new tools, workflows, and creative possibilities. My work combines the precision and control of 3D with the speed, experimentation, and creative potential of AI.</p>
-      <p class="about__text">I’m particularly drawn to projects that translate products, objects, and ideas into visual experiences, with a focus on beauty, jewelry, fashion, and consumer tech.</p>
-      <p class="about__text">I’m always open to new collaborations and creative projects. Feel free to get in touch if you’d like to collaborate, discuss a project, or connect professionally. You can reach me via email or through my social channels.</p>
+      <p class="about__text">I am a multidisciplinary designer with a foundation in graphic design, now working with hybrid CGI and AI pipelines.</p>
+      <p class="about__text">My process bridges structural control and experimental image-making. By staging geometry and animation in 3D, I use AI to elevate the lighting, textures, and final aesthetic. This workflow offers absolute spatial control while unlocking new visual boundaries.</p>
+      <p class="about__text">I focus on translating products into compelling visual narratives for the beauty, jewelry, fashion, and consumer tech sectors.</p>
+      <p class="about__text">Let’s create something together!</p>
     </div>
   </article>
 
@@ -26,45 +26,45 @@ import SiteFooter from '../components/SiteFooter.astro';
     max-width: var(--grid-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
-    padding-top: calc(var(--nav-height) + 100px); /* 100 below the header */
+    padding-top: calc(var(--nav-height) + 6.25rem); /* 100 below the header */
   }
 
   .about__texts {
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 3.125rem;
   }
 
   .about__text {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 64px;
+    font-size: 4rem;
     line-height: 1.4;
   }
 
   /* Tablet (900–1366) */
   @media (max-width: 1366px) {
     .about {
-      padding-top: calc(var(--nav-height) + 50px);
+      padding-top: calc(var(--nav-height) + 3.125rem);
     }
 
     .about__texts {
-      gap: 40px;
+      gap: 2.5rem;
     }
 
     .about__text {
-      font-size: 40px;
+      font-size: 2.5rem;
     }
   }
 
   /* Mobile (<900) */
   @media (max-width: 900px) {
     .about__texts {
-      gap: 30px;
+      gap: 1.875rem;
     }
 
     .about__text {
-      font-size: 30px;
+      font-size: 1.875rem;
     }
   }
 </style>

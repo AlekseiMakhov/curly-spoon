@@ -36,15 +36,15 @@ const { credits = ['Arina Makhova', '©2026'] } = Astro.props;
     max-width: var(--grid-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
-    padding-bottom: 68px;
-    min-height: 210px;
+    padding-bottom: 4.25rem;
+    min-height: 13.125rem;
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gutter);
     align-items: end;
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
   }
 
@@ -70,24 +70,32 @@ const { credits = ['Arina Makhova', '©2026'] } = Astro.props;
     grid-column: 11 / -1;
     justify-self: end;
     flex-direction: row;
-    gap: 30px;
+    gap: 1.875rem;
   }
 
   /* Tablet — even spacing between the three blocks */
   @media (max-width: 1439px) {
     .site-footer {
-      min-height: 165px;
-      padding-bottom: 50px;
+      min-height: 10.3125rem;
+      padding-bottom: 3.125rem;
       display: flex;
       justify-content: space-between;
       gap: var(--grid-gutter);
     }
   }
 
-  /* Vertical mobile — stack: email, links (5px), then credits (50px below) */
-  @media (max-width: 768px) {
+  /* Landscape mobile — smaller type, shorter footer (still a space-between row) */
+  @media (max-width: 900px) {
     .site-footer {
-      min-height: 315px;
+      min-height: 9.375rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Portrait mobile — stack: email, links (5px), then credits (50px below) */
+  @media (max-width: 480px) {
+    .site-footer {
+      min-height: 15.625rem;
       flex-direction: column;
       align-items: flex-start;
       justify-content: flex-end;
@@ -100,13 +108,13 @@ const { credits = ['Arina Makhova', '©2026'] } = Astro.props;
 
     .site-footer__links {
       order: 2;
-      margin-top: 5px;
+      margin-top: 0.3125rem;
       justify-self: start;
     }
 
     .site-footer__credits {
       order: 3;
-      margin-top: 50px;
+      margin-top: 3.125rem;
     }
   }
 </style>

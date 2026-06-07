@@ -27,8 +27,8 @@ npm run preview  # preview built output
 ```
 src/
 ├── pages/
-│   ├── index.astro           # Works list (homepage)
-│   └── works/[slug].astro    # Project detail page
+│   ├── index.astro           # Projects list (homepage)
+│   └── projects/[slug].astro    # Project detail page
 ├── components/
 │   ├── Nav.astro             # Fixed header + mobile hamburger menu
 │   └── ProjectGallery.astro  # Gallery grid (1 / 2 / 3 columns)
@@ -37,7 +37,7 @@ src/
 ├── styles/
 │   └── global.css            # @font-face, CSS vars, reset
 └── content/
-    └── works/                # Per-project JSON (slug, title, gallery items)
+    └── projects/                # Per-project JSON (slug, title, gallery items)
         ├── gisou.json
         ├── omut.json
         └── balmain.json
@@ -45,9 +45,9 @@ src/
 
 ## Adding / editing a project
 
-Edit the JSON in `src/content/works/<slug>.json`. Each file has:
+Edit the JSON in `src/content/projects/<slug>.json`. Each file has:
 
-- `slug` — URL segment (`/works/<slug>`)
+- `slug` — URL segment (`/projects/<slug>`)
 - `index` — display number ("01", "02" …)
 - `title` — all-caps project name
 - `next` — slug of the next project (cycles)

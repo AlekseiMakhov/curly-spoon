@@ -21,7 +21,7 @@ const { index, title, description } = Astro.props;
     max-width: var(--grid-max);
     margin-inline: auto;
     /* top = gap above the title, bottom = gap below the description (Figma) */
-    padding: 20px var(--page-padding) 100px;
+    padding: 1.25rem var(--page-padding) 6.25rem;
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gutter);
@@ -31,23 +31,23 @@ const { index, title, description } = Astro.props;
   .project__head {
     grid-column: 4 / -1;
     position: relative;
-    padding-left: 60px; /* title sits past the hanging index */
+    padding-left: 3.75rem; /* title sits past the hanging index */
   }
 
   .project__index {
     position: absolute;
     left: 0;
-    top: 58px; /* superscript: 58px below the title top (Figma) */
+    top: 3.625rem; /* superscript: 58px below the title top (Figma) */
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
   }
 
   .project__title {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 200px;
+    font-size: 12.5rem;
     line-height: 1;
     text-transform: lowercase;
   }
@@ -55,81 +55,81 @@ const { index, title, description } = Astro.props;
   /* description spans columns 4–11, aligned under the title */
   .project__desc {
     grid-column: 4 / 12;
-    padding-left: 60px;
-    margin-top: 30px;
+    padding-left: 3.75rem;
+    margin-top: 1.875rem;
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
   }
 
   /* ≤1919 — Figma 1440: title 150 (line-height stays 100%) */
   @media (max-width: 1919px) {
     .project__header {
-      padding-top: 20px;
-      padding-bottom: 80px;
+      padding-top: 1.25rem;
+      padding-bottom: 5rem;
     }
 
     .project__title {
-      font-size: 150px;
+      font-size: 9.375rem;
     }
 
     .project__index {
-      top: 42px;
+      top: 2.625rem;
     }
 
     .project__desc {
-      margin-top: 40px;
+      margin-top: 2.5rem;
     }
   }
 
   /* ≤1439 — Figma 1024: title 100 */
   @media (max-width: 1439px) {
     .project__header {
-      padding-top: 10px;
-      padding-bottom: 60px;
+      padding-top: 0.625rem;
+      padding-bottom: 3.75rem;
     }
 
     .project__title {
-      font-size: 100px;
+      font-size: 6.25rem;
       line-height: 1.2;
     }
 
     .project__index {
-      top: 35px;
+      top: 2.1875rem;
     }
 
     .project__desc {
-      margin-top: 20px;
+      margin-top: 1.25rem;
     }
   }
 
   /* ≤1023 — Figma 874/402: title 70, content full-width */
   @media (max-width: 1023px) {
     .project__header {
-      padding-top: 10px;
-      padding-bottom: 50px;
+      padding-top: 0.625rem;
+      padding-bottom: 3.125rem;
     }
 
     .project__head {
       grid-column: 1 / -1;
-      padding-left: 30px;
+      padding-left: 1.875rem;
     }
 
     .project__index {
-      top: 26px;
-      font-size: 14px;
+      top: 1.625rem;
+      font-size: 0.875rem;
     }
 
     .project__title {
-      font-size: 70px;
+      font-size: 4.375rem;
     }
 
     .project__desc {
       grid-column: 1 / -1;
-      padding-left: 30px;
-      margin-top: 10px;
-      font-size: 14px;
+      padding-left: 1.875rem;
+      margin-top: 0.625rem;
+      font-size: 0.875rem;
     }
   }
 </style>

@@ -29,7 +29,7 @@ const { label } = Astro.props;
     flex-direction: var(--ci-direction, column);
     justify-content: var(--ci-justify, flex-start);
     align-items: var(--ci-align, flex-start);
-    gap: var(--ci-gap, 5px);
+    gap: var(--ci-gap, 0.3125rem);
     font-family: var(--font-mono);
     font-weight: 400;
     line-height: 1.5;
@@ -38,12 +38,12 @@ const { label } = Astro.props;
   .contact-info__contact {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.3125rem;
   }
 
   .contact-info__socials {
     display: flex;
-    gap: var(--ci-socials-gap, 20px);
+    gap: var(--ci-socials-gap, 1.25rem);
   }
 
   /* Hover effect comes from the global `.hover-underline` utility.
