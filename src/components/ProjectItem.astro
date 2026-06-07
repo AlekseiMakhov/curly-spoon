@@ -158,34 +158,34 @@ const mediaStyle = (b: MarqueeBlock) =>
     max-width: var(--grid-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
-    height: 320px;
+    height: 20rem;
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 1.25rem;
   }
 
   .project-item__head {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 1.25rem;
     min-width: 0;
   }
 
   .project-item__index {
     font-family: var(--font-mono);
     font-weight: 300;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
-    margin-top: 82px;
+    margin-top: 5.125rem;
     transition: opacity 0.15s;
   }
 
   .project-item__title {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 250px;
+    font-size: 15.625rem;
     line-height: 0.8;
-    margin-top: 30px;
+    margin-top: 1.875rem;
     text-transform: lowercase;
     transition: opacity 0.15s;
   }
@@ -194,11 +194,11 @@ const mediaStyle = (b: MarqueeBlock) =>
      hidden on desktop with it and shown below 1440). */
   .project-item__cta {
     display: block;
-    margin-top: 30px;
+    margin-top: 1.875rem;
     text-align: center;
     font-family: var(--font-mono);
     font-weight: 400;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.5;
   }
 
@@ -216,7 +216,7 @@ const mediaStyle = (b: MarqueeBlock) =>
   .project-item__marquee {
     position: absolute;
     inset: 0;
-    padding-block: 18px;
+    padding-block: 1.125rem;
     overflow: hidden;
     display: none;
     pointer-events: none;
@@ -260,18 +260,18 @@ const mediaStyle = (b: MarqueeBlock) =>
   .project-item__marquee-name {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 1.25rem;
     flex-shrink: 0;
     align-self: flex-start;
-    margin-top: -18px; /* cancel .project-item__marquee padding-block so offsets are from the row top */
+    margin-top: -1.125rem; /* cancel .project-item__marquee padding-block so offsets are from the row top */
   }
 
   .project-item__marquee-index {
     font-family: var(--font-mono);
     font-weight: 300;
-    font-size: 20px;
+    font-size: 1.25rem;
     line-height: 1.5;
-    margin-top: 82px;
+    margin-top: 5.125rem;
     color: var(--color-text);
     flex-shrink: 0;
   }
@@ -279,9 +279,9 @@ const mediaStyle = (b: MarqueeBlock) =>
   .project-item__marquee-heading {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 250px;
+    font-size: 15.625rem;
     line-height: 0.8;
-    margin-top: 30px;
+    margin-top: 1.875rem;
     color: var(--color-text);
     flex-shrink: 0;
     white-space: nowrap;
@@ -312,10 +312,10 @@ const mediaStyle = (b: MarqueeBlock) =>
 
   .project-item__marquee-desc {
     font-family: var(--font-mono);
-    font-size: 18px;
+    font-size: 1.125rem;
     line-height: 1.5;
-    width: 460px;
-    margin-inline: 30px;
+    width: 28.75rem;
+    margin-inline: 1.875rem;
     color: var(--color-text);
     flex-shrink: 0;
   }
@@ -339,16 +339,16 @@ const mediaStyle = (b: MarqueeBlock) =>
     .project-item__content {
       height: auto;
       align-items: flex-start; /* title pinned to the top of the row, not centred */
-      gap: 40px;
-      padding-block: 40px;
+      gap: 2.5rem;
+      padding-block: 2.5rem;
     }
 
     .project-item__head {
       /* fixed share so the swiper starts at the same x across every row */
       flex: 0 0 45%;
       align-items: flex-start;
-      gap: 8px;
-      --wi-title: 90px; /* title size per breakpoint; also drives the index's top offset */
+      gap: 0.5rem;
+      --wi-title: 5.625rem; /* title size per breakpoint; also drives the index's top offset */
     }
 
     .project-item__index {
@@ -356,7 +356,7 @@ const mediaStyle = (b: MarqueeBlock) =>
       margin-top: calc(var(--wi-title) * 0.26);
       align-self: flex-start;
       line-height: 1;
-      font-size: 14px;
+      font-size: 0.875rem;
     }
 
     .project-item__title {
@@ -375,7 +375,7 @@ const mediaStyle = (b: MarqueeBlock) =>
   /* Font size steps down at 1024 */
   @media (max-width: 1023px) {
     .project-item__head {
-      --wi-title: 70px;
+      --wi-title: 4.375rem;
     }
   }
 
@@ -384,13 +384,13 @@ const mediaStyle = (b: MarqueeBlock) =>
     .project-item__content {
       flex-direction: column;
       align-items: stretch;
-      gap: 20px;
-      padding-block: 30px;
+      gap: 1.25rem;
+      padding-block: 1.875rem;
     }
 
     .project-item__head {
       flex: none;
-      --wi-title: clamp(44px, 13vw, 60px);
+      --wi-title: clamp(2.75rem, 13vw, 3.75rem);
     }
 
     .project-item__title {

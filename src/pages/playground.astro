@@ -181,8 +181,8 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
   /* Carousels are created at runtime, so these styles must be global
      (Astro's scoped styles only apply to build-time elements). */
   .playground {
-    padding-top: calc(var(--nav-height) + 100px);
-    padding-bottom: 100px;
+    padding-top: calc(var(--nav-height) + 6.25rem);
+    padding-bottom: 6.25rem;
     min-height: 60vh;
   }
 
@@ -201,7 +201,7 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .playground {
-      padding-top: calc(var(--nav-height) + 50px);
+      padding-top: calc(var(--nav-height) + 3.125rem);
     }
   }
 
@@ -250,13 +250,13 @@ const playgroundBase = `${MEDIA_BASE}/playground`;
   .pgc__dots {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 14px;
+    gap: 0.5rem;
+    margin-top: 0.875rem;
   }
 
   .pgc__dot {
-    width: 7px;
-    height: 7px;
+    width: 0.4375rem;
+    height: 0.4375rem;
     border-radius: 50%;
     background-color: var(--color-text);
     opacity: 0.35;

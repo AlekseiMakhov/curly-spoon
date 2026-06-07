@@ -26,45 +26,45 @@ import SiteFooter from '../components/SiteFooter.astro';
     max-width: var(--grid-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
-    padding-top: calc(var(--nav-height) + 100px); /* 100 below the header */
+    padding-top: calc(var(--nav-height) + 6.25rem); /* 100 below the header */
   }
 
   .about__texts {
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 3.125rem;
   }
 
   .about__text {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 64px;
+    font-size: 4rem;
     line-height: 1.4;
   }
 
   /* Tablet (900–1366) */
   @media (max-width: 1366px) {
     .about {
-      padding-top: calc(var(--nav-height) + 50px);
+      padding-top: calc(var(--nav-height) + 3.125rem);
     }
 
     .about__texts {
-      gap: 40px;
+      gap: 2.5rem;
     }
 
     .about__text {
-      font-size: 40px;
+      font-size: 2.5rem;
     }
   }
 
   /* Mobile (<900) */
   @media (max-width: 900px) {
     .about__texts {
-      gap: 30px;
+      gap: 1.875rem;
     }
 
     .about__text {
-      font-size: 30px;
+      font-size: 1.875rem;
     }
   }
 </style>
