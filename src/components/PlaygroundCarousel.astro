@@ -1,0 +1,257 @@
+---
+// Single-folder image carousel for the Playground, as a <pg-carousel> custom element.
+//
+// The page creates placeholder elements and calls `el.load()`, which probes the
+// folder's images (jpg, sequential, stop at the first gap) and either renders the
+// carousel or reports that the folder is absent. Including this component once on a
+// page registers the element and its styles; it renders no markup itself.
+//
+// Behaviour: one image in a 3/4 frame, dots (one per image; active solid, others
+// dimmed), looping. Click image → next; click a dot → jump to it; swipe left/right
+// → next/prev. Forward = the incoming image enters from the right (content slides
+// left), matching the dots running left→right.
+---
+
+<script>
+  const MAX_IMAGES = 200;
+  const SWIPE_MIN = 40; // px — min horizontal distance counted as a swipe
+  const DURATION = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500;
+  const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
+  const pad = (n: number, len: number) => String(n).padStart(len, '0');
+
+  // Resolve a URL to itself if it loads as an image (cross-origin friendly; also
+  // preloads it for display), or to null if it 404s.
+  const probeImage = (url: string) =>
+    new Promise<string | null>((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(url);
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+
+  class PlaygroundCarousel extends HTMLElement {
+    private active = 0;
+    private animating = false;
+    private slides: HTMLElement[] = [];
+    private dots: HTMLElement[] = [];
+
+    connectedCallback() {
+      // Skeleton until load() resolves.
+      this.classList.add('pgc', 'pgc--skeleton');
+      this.innerHTML = '<div class="pgc__viewport"></div>';
+    }
+
+    /** Probe this folder and render it. Resolves true if it exists, false if absent. */
+    async load(): Promise<boolean> {
+      const images = await this.discover();
+      if (!images.length) return false;
+      this.renderImages(images);
+      return true;
+    }
+
+    /** URLs of every image in this folder: <base>/<NNN>/<NN>.jpg, stopping at the first gap. */
+    private async discover(): Promise<string[]> {
+      const base = (this.dataset.base ?? '').replace(/\/$/, '');
+      const dir = `${base}/${pad(Number(this.dataset.folder), 3)}`;
+      const images: string[] = [];
+      for (let i = 1; i <= MAX_IMAGES; i++) {
+        const url = await probeImage(`${dir}/${pad(i, 2)}.jpg`);
+        if (!url) break;
+        images.push(url);
+      }
+      return images;
+    }
+
+    private renderImages(images: string[]) {
+      const viewport = document.createElement('div');
+      viewport.className = 'pgc__viewport';
+      this.slides = images.map((src, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'pgc__slide' + (i === 0 ? ' is-active' : '');
+        const img = document.createElement('img');
+        img.className = 'pgc__img';
+        img.src = src;
+        img.alt = '';
+        img.decoding = 'async';
+        img.draggable = false;
+        slide.appendChild(img);
+        viewport.appendChild(slide);
+        return slide;
+      });
+
+      this.classList.remove('pgc--skeleton');
+      this.replaceChildren(viewport);
+
+      if (images.length > 1) {
+        this.appendChild(this.buildDots(images.length));
+        this.bindControls(viewport, images.length);
+      }
+    }
+
+    private buildDots(n: number): HTMLElement {
+      const dots = document.createElement('div');
+      dots.className = 'pgc__dots';
+      this.dots = Array.from({ length: n }, (_, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'pgc__dot' + (i === 0 ? ' is-active' : '');
+        dots.appendChild(dot);
+        return dot;
+      });
+      return dots;
+    }
+
+    // Cross-slide to `target`. forward → incoming enters from the right, current exits
+    // left (content moves left); backward is the mirror. Looping; dot fades across.
+    private go(target: number, forward: boolean) {
+      if (this.animating || target === this.active) return;
+      this.animating = true;
+      const current = this.slides[this.active];
+      const incoming = this.slides[target];
+      const enterFrom = forward ? '100%' : '-100%';
+      const exitTo = forward ? '-100%' : '100%';
+
+      incoming.classList.add('is-entering');
+      incoming.style.transition = 'none';
+      incoming.style.transform = `translateX(${enterFrom})`;
+      current.style.transition = 'none';
+      current.style.transform = 'translateX(0)';
+      void this.offsetWidth; // reflow so the start positions take effect
+
+      const transition = `transform ${DURATION}ms ${EASE}`;
+      incoming.style.transition = transition;
+      current.style.transition = transition;
+      incoming.style.transform = 'translateX(0)';
+      current.style.transform = `translateX(${exitTo})`;
+      this.dots[this.active].classList.remove('is-active');
+      this.dots[target].classList.add('is-active');
+
+      const finish = () => {
+        incoming.removeEventListener('transitionend', finish);
+        current.classList.remove('is-active');
+        current.style.transition = current.style.transform = '';
+        incoming.classList.remove('is-entering');
+        incoming.classList.add('is-active');
+        incoming.style.transition = incoming.style.transform = '';
+        this.active = target;
+        this.animating = false;
+      };
+      if (DURATION === 0) finish();
+      else incoming.addEventListener('transitionend', finish);
+    }
+
+    private bindControls(viewport: HTMLElement, n: number) {
+      viewport.style.cursor = 'pointer';
+      const next = () => this.go((this.active + 1) % n, true);
+      const prev = () => this.go((this.active - 1 + n) % n, false);
+
+      // Click image → next, except the synthetic click a touchscreen fires after a
+      // swipe (it would undo a backward swipe); `swiped` suppresses that one click.
+      let swiped = false;
+      viewport.addEventListener('click', () => {
+        if (swiped) swiped = false;
+        else next();
+      });
+      this.dots.forEach((dot, i) => dot.addEventListener('click', () => this.go(i, i > this.active)));
+
+      // Swipe — direction-aware: left = next, right = prev.
+      let startX = 0, startY = 0, tracking = false;
+      viewport.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        tracking = true;
+        swiped = false;
+      }, { passive: true });
+      viewport.addEventListener('touchend', (e) => {
+        if (!tracking) return;
+        tracking = false;
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = e.changedTouches[0].clientY - startY;
+        if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) {
+          swiped = true;
+          (dx < 0 ? next : prev)();
+        }
+      }, { passive: true });
+    }
+  }
+
+  if (!customElements.get('pg-carousel')) {
+    customElements.define('pg-carousel', PlaygroundCarousel);
+  }
+</script>
+
+<style is:global>
+  /* One image visible at a time, in a 3/4 frame (the <pg-carousel> element itself). */
+  .pgc {
+    display: block;
+    width: 100%;
+  }
+
+  .pgc__viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background-color: var(--color-placeholder);
+    touch-action: pan-y; /* page scrolls vertically; horizontal = our swipe */
+  }
+
+  .pgc__slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    will-change: transform;
+  }
+
+  .pgc__slide.is-active,
+  .pgc__slide.is-entering {
+    display: block;
+  }
+
+  .pgc__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  /* Dots — one per image; active is solid white, others dimmed (fades across). */
+  .pgc__dots {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.875rem;
+  }
+
+  .pgc__dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: var(--color-text);
+    opacity: 0.35;
+    cursor: pointer;
+    transition: opacity 0.4s;
+  }
+
+  .pgc__dot.is-active {
+    opacity: 1;
+  }
+
+  /* Skeleton shimmer shown until a folder is probed + loaded. */
+  .pgc--skeleton .pgc__viewport {
+    background-image: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.06) 50%, transparent 60%);
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    animation: pgc-skeleton 1.4s linear infinite;
+  }
+
+  @keyframes pgc-skeleton {
+    from { background-position: 150% 0; }
+    to   { background-position: -150% 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pgc--skeleton .pgc__viewport { animation: none; }
+  }
+</style>

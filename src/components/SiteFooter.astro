@@ -33,11 +33,14 @@ const { credits = ['Arina Makhova', '©2026'] } = Astro.props;
 <style>
   /* Desktop — three blocks on the 12-col grid */
   .site-footer {
+    width: 100%; /* definite cross-size so a flex-column <main> still stretches it to the grid */
     max-width: var(--grid-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
     padding-bottom: 4.25rem;
     min-height: 13.125rem;
+    margin-top: auto;   /* stick to the bottom of the page (main is a flex column) */
+    flex-shrink: 0;
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gutter);
