@@ -12,7 +12,12 @@ export const SOCIALS = [
 // Variants are 480 / 900 / 1440 / 1920 wide. The grid never grows past 1920
 // (--grid-max), so that's the ceiling. <img> uses these as srcset widths (browser
 // picks, DPR-aware); <video> has no srcset, so ResponsiveVideo picks in JS.
-export const MEDIA_BASE = 'https://pub-7f882894bce745c5be03e7449ef36235.r2.dev'; // R2 public bucket (swap for a custom domain in prod)
+// Base URL for media assets. Set PUBLIC_ASSETS_URL in the build env (e.g. a
+// custom domain in front of R2); falls back to the R2 public bucket so local
+// `dev` works without any .env. Trailing slashes are trimmed — mediaSrc adds them.
+export const MEDIA_BASE = (
+  import.meta.env.PUBLIC_ASSETS_URL ?? 'https://pub-7f882894bce745c5be03e7449ef36235.r2.dev'
+).replace(/\/+$/, '');
 export const MEDIA_WIDTHS = [480, 900, 1440, 1920];
 
 // Variant URL for an asset. `path` is '<project>/<file>' (e.g. 'omut/OMUT-01.mp4'); the
