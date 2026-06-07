@@ -39,7 +39,7 @@ import SiteFooter from '../components/SiteFooter.astro';
   .about__text {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 1.6875rem; /* 27px */
+    font-size: 4rem;
     line-height: 1.4;
   }
 
@@ -52,12 +52,27 @@ import SiteFooter from '../components/SiteFooter.astro';
     .about__texts {
       gap: 2.5rem;
     }
+
+    .about__text {
+      font-size: 2.5rem;
+    }
   }
 
-  /* Mobile (<900) */
+  /* Landscape mobile (<900) */
   @media (max-width: 900px) {
     .about__texts {
       gap: 1.875rem;
+    }
+
+    .about__text {
+      font-size: 1.625rem; /* 26px */
+    }
+  }
+
+  /* Portrait mobile (<480) */
+  @media (max-width: 480px) {
+    .about__text {
+      font-size: 1.25rem; /* 20px */
     }
   }
 </style>
