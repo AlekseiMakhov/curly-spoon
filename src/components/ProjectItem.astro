@@ -378,6 +378,17 @@ const mediaStyle = (b: MarqueeBlock) =>
     }
   }
 
+  /* Tablet (900–1439): no swiper — just the project title (mobile keeps the swiper) */
+  @media (min-width: 900px) and (max-width: 1439px) {
+    .project-item__media {
+      display: none;
+    }
+
+    .project-item__head {
+      flex: 1 1 auto; /* title fills the row */
+    }
+  }
+
   /* Font size steps down at 1024 */
   @media (max-width: 1023px) {
     .project-item__head {

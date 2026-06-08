@@ -62,9 +62,10 @@ const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=3" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
     {preloadFonts.map((href) => (
       <link rel="preload" href={href} as="font" type="font/woff2" crossorigin="anonymous" />
     ))}
