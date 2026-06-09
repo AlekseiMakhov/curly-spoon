@@ -19,7 +19,7 @@ interface Props {
 const {
   title = 'Arina Makhova',
   description = 'Portfolio of Arina Makhova — a multidisciplinary designer working across 3D, AI, and motion, with a focus on beauty, jewelry, fashion, and consumer tech.',
-  ogImage = '/og-default.png',
+  ogImage = '/og-default.jpg',
   ogType = 'website',
   noindex = false,
   preloadFonts = [],
@@ -29,7 +29,7 @@ const {
 const site = Astro.site ?? new URL('https://arinamakhova.com');
 const canonical = new URL(Astro.url.pathname, site).href;
 const ogImageUrl = new URL(ogImage, site).href;
-const isDefaultOg = ogImage === '/og-default.png';
+const isDefaultOg = ogImage === '/og-default.jpg';
 
 // Cloudflare Web Analytics beacon. The token comes from the PUBLIC_CF_BEACON_TOKEN
 // build env var (set on Cloudflare for the production domain), so local `dev`
